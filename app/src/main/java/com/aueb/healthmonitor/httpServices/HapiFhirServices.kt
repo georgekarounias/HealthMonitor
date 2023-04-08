@@ -1,7 +1,6 @@
 package com.aueb.healthmonitor.httpServices
 
 import ca.uhn.fhir.context.FhirContext
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.hl7.fhir.r4.model.Bundle
 import retrofit2.Call
@@ -26,6 +25,25 @@ class HapiFhirServices {
 
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
 
+                }
+            })
+        }
+
+        fun createObservation(observation: JsonObject)
+        {
+            val call = retroInstance.createObservation(observation)
+            call.enqueue(object : Callback<JsonObject> {
+                override fun onResponse(
+                    call: Call<JsonObject>,
+                    response: Response<JsonObject>
+                ) {
+                    val r = response.code()
+                    val x = "hereh"
+                }
+
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                    val m = t.message
+                    val x = "hereh"
                 }
             })
         }

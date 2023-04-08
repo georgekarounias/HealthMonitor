@@ -1,8 +1,15 @@
 package com.aueb.healthmonitor
 
+
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.health.connect.client.records.HeartRateRecord
+import ca.uhn.fhir.context.FhirContext
 import com.aueb.healthmonitor.httpServices.HapiFhirServices
+import com.aueb.healthmonitor.recordConverters.RecordConverter.Companion.toFhirObservation
+import java.time.Instant
+import java.util.*
+
 
 //import ca.uhn.fhir.context.FhirContext
 //import org.hl7.fhir.instance.model.api.IBaseBundle
@@ -19,6 +26,22 @@ class MainActivity : AppCompatActivity() {
 
         HapiFhirServices.getObservationsByPatientId("1")
 
+        ////////////TODO: ADD Health CONNECT
+        val now = Instant.now()
+        val heartRateRecord = HeartRateRecord(
+            Instant.now(),
+            null,
+            Instant.now().plusSeconds(300),
+            null,
+            listOf(
+                HeartRateRecord.Sample(now.minusSeconds(10), 70),
+                HeartRateRecord.Sample(now, 80)
+            )
+        )
+        val observation = toFhirObservation(heartRateRecord)
+
+        HapiFhirServices.createObservation(observation)
+        ///////////
 //        val bundle = client.search<IBaseBundle>()
 //            .forResource(Patient::class.java)
 //            .where(Patient.NAME.matches().value("John"))
@@ -27,4 +50,7 @@ class MainActivity : AppCompatActivity() {
         val s0 = "ddd"
         //////////////////////////////////////////////
     }
+
+
+
 }
