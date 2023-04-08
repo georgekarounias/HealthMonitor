@@ -22,10 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //////////////////////////////////////////////
-        val serverBase = "http://192.168.2.3:8080/fhir/"
-
-        HapiFhirServices.getObservationsByPatientId("1")
-
+        //HapiFhirServices.getObservationsByPatientId("1")
         ////////////TODO: ADD Health CONNECT
         val now = Instant.now()
         val heartRateRecord = HeartRateRecord(
@@ -38,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 HeartRateRecord.Sample(now, 80)
             )
         )
-        val observation = toFhirObservation(heartRateRecord)
+        val observation = toFhirObservation(heartRateRecord, "1")
 
         HapiFhirServices.createObservation(observation)
         ///////////

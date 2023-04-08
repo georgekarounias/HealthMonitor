@@ -20,23 +20,40 @@ class RecordConverter {
             return jsonObj
         }
 
-        fun toFhirObservation(record: HeartRateRecord): JsonObject {
+        private fun createObservation(record: HeartRateRecord, patientId: String): Observation
+        {
             //TODO: need fix here for patient id :: it comes from params
+            //TODO: add more set for instance
             //TODO: need to fix hardcoded strings
-            val patientId = "1"
+            val recordValue = record.samples[0].beatsPerMinute
+            val recordTime = record.samples[0].time
+            val patient = "Patient/$patientId"
+            //val params => ena static function me params gia kathe resource pou ipostirizw
+            val params = ObservationParams.createHeartRate()//TODO: polimorfismos edw
+            //TODELETE
+            val observationStatusType = Observation.ObservationStatus.FINAL
+            val codeCode = "8867-4"
+            val codeDisplayName = "Heart rate"
+            val codeSystem = "http://loinc.org"
+            val valueUnit = "bpm"
+            val valueCode = "/min"
+            val valueSystem = "http://unitsofmeasure.org"
+            val categoryCode = "vital-signs"
+            val categoryDisplay = "Vital Signs"
+            val categorySystem = "http://terminology.hl7.org/CodeSystem/observation-category"
+            //TODELETE UNTIL HERE
             val observation = Observation()
-                .setSubject(Reference("Patient/$patientId"))
-                .setEffective(DateTimeType(Date.from(record.samples[0].time))) //TODO: need fix here for list logic
-                .setStatus(Observation.ObservationStatus.FINAL)
-                .setCode(CodeableConcept().addCoding(Coding().setCode("8867-4").setDisplay("Heart rate").setSystem("http://loinc.org")))
-                .setValue(Quantity().setValue(record.samples[0].beatsPerMinute).setUnit("bpm")) //TODO: need fix here for list logic
-                .setCategory(listOf(CodeableConcept().addCoding(Coding().setCode("vital-signs").setDisplay("Vital Signs").setSystem("http://terminology.hl7.org/CodeSystem/observation-category"))))
+                .setSubject(Reference(patient))
+                .setEffective(DateTimeType(Date.from(recordTime)))
+                .setStatus(observationStatusType)
+                .setCode(CodeableConcept().addCoding(Coding().setCode(codeCode).setDisplay(codeDisplayName).setSystem(codeSystem)))
+                .setValue(Quantity().setValue(recordValue).setUnit(valueUnit).setCode(valueCode).setSystem(valueSystem))
+                .setCategory(listOf(CodeableConcept().addCoding(Coding().setCode(categoryCode).setDisplay(categoryDisplay).setSystem(categorySystem))))
+            return observation
+        }
 
-//            val ctx: FhirContext = FhirContext.forR4()
-//            val parser = ctx.newJsonParser()
-//            val json: String = parser.encodeResourceToString(observation)
-//
-//            val jsonObj = Gson().fromJson(json, JsonObject::class.java)
+        fun toFhirObservation(record: HeartRateRecord, patientId: String): JsonObject {
+            val observation = createObservation(record, patientId)
             val jsonObj = convertToJsonObject(observation)
             return jsonObj
         }
