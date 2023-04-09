@@ -31,7 +31,6 @@ android {
         jvmTarget = '1.8'
     }
 }
-
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -44,7 +43,14 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    implementation("ca.uhn.hapi.fhir:hapi-fhir-android:6.0.1")
+    configurations {
+        all*.exclude group: 'org.codehaus.woodstox'
+        all*.exclude group: 'org.apache.httpcomponents'
+    }
     implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.0.1")
     // For Health Connect
     implementation "androidx.health.connect:connect-client:1.0.0-alpha07"
+
 }
