@@ -16,24 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //////////////////////////////////////////////
-        //HapiFhirServices.getObservationsByPatientId("1")
-        ////////////TODO: ADD Health CONNECT
-//        val now = Instant.now()
-//        val heartRateRecord = HeartRateRecord(
-//            Instant.now(),
-//            null,
-//            Instant.now().plusSeconds(300),
-//            null,
-//            listOf(
-//                HeartRateRecord.Sample(now.minusSeconds(10), 70),
-//                HeartRateRecord.Sample(now, 80)
-//            )
-//        )
-//        val observation = toFhirObservation(heartRateRecord, "1")
-//
-//        HapiFhirServices.createObservation(observation)
-        ///////////
 
         GlobalScope.launch(Dispatchers.IO) {
 //            val patient = withContext(Dispatchers.Default) {
@@ -55,7 +37,9 @@ class MainActivity : AppCompatActivity() {
                     )
                 FhirServices.createHeartRateObservation(heartRateRecord, "1")
             }
+
         }
+
     }
 
 }
