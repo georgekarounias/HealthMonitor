@@ -24,18 +24,31 @@ class MainActivity : AppCompatActivity() {
 //            val xx = patient.toString()
 
             withContext(Dispatchers.Default) {
-                    val now = Instant.now()
-                    val heartRateRecord = HeartRateRecord(
-                        Instant.now(),
-                        null,
-                        Instant.now().plusSeconds(300),
-                        null,
-                        listOf(
-                            HeartRateRecord.Sample(now.minusSeconds(10), 66),
-                            HeartRateRecord.Sample(now, 23)
-                        )
+                val heartRecords = mutableListOf<HeartRateRecord>()
+                val now = Instant.now()
+                val heartRateRecord = HeartRateRecord(
+                    Instant.now(),
+                    null,
+                    Instant.now().plusSeconds(300),
+                    null,
+                    listOf(
+                        HeartRateRecord.Sample(now.minusSeconds(10), 55),
+                        HeartRateRecord.Sample(now, 44)
                     )
-                FhirServices.createHeartRateObservation(heartRateRecord, "1")
+                )
+                heartRecords.add(heartRateRecord)
+                val heartRateRecord2 = HeartRateRecord(
+                    Instant.now(),
+                    null,
+                    Instant.now().plusSeconds(400),
+                    null,
+                    listOf(
+                        HeartRateRecord.Sample(now.minusSeconds(100), 22),
+                        HeartRateRecord.Sample(now, 33)
+                    )
+                )
+                heartRecords.add(heartRateRecord2)
+                FhirServices.createHeartRateObservation(heartRecords, "1")
             }
 
         }

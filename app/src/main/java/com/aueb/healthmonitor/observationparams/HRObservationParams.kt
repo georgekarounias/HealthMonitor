@@ -1,10 +1,14 @@
-package com.aueb.healthmonitor.recordConverters
+package com.aueb.healthmonitor.observationparams
 
+import com.aueb.healthmonitor.recordConverters.CategoryParams
+import com.aueb.healthmonitor.recordConverters.CodeParams
+import com.aueb.healthmonitor.recordConverters.ObservationParams
+import com.aueb.healthmonitor.recordConverters.ValueParams
 import org.hl7.fhir.r4.model.Observation
 
-class ObservationParams{
+class HRObservationParams {
     companion object{
-        fun createHeartRate(): ObservationTypeParams{
+        fun createHeartRate(): ObservationParams {
             val catParams = CategoryParams(
                 display = "Vital Signs",
                 code = "vital-signs",
@@ -20,7 +24,7 @@ class ObservationParams{
                 code = "8867-4",
                 system = "http://loinc.org",
             )
-            val params = ObservationTypeParams(
+            val params = ObservationParams(
                 observationStatusType = Observation.ObservationStatus.FINAL,
                 codeParams = codeParams,
                 valueParams = valParams,
@@ -30,28 +34,3 @@ class ObservationParams{
         }
     }
 }
-
-data class ObservationTypeParams(
-    val observationStatusType: Observation.ObservationStatus,
-    val codeParams: CodeParams,
-    val valueParams: ValueParams,
-    val categoryParams: CategoryParams
-)
-
-data class CodeParams(
-    val display:String,
-    val code:String,
-    val system:String
-)
-
-data class ValueParams(
-    val unit:String,
-    val code:String,
-    val system:String,
-)
-
-data class CategoryParams(
-    val display:String,
-    val code:String,
-    val system:String
-)

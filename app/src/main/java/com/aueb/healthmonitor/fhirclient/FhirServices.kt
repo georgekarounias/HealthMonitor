@@ -1,7 +1,7 @@
 package com.aueb.healthmonitor.fhirclient
 
 import androidx.health.connect.client.records.HeartRateRecord
-import com.aueb.healthmonitor.recordConverters.RecordConverter
+import com.aueb.healthmonitor.recordConverters.HRRecordConverter
 import org.hl7.fhir.instance.model.api.IBaseResource
 import org.hl7.fhir.r4.model.Bundle
 
@@ -12,9 +12,9 @@ class FhirServices {
             return client?.read()?.resource("Patient")?.withId(id)?.execute()
         }
 
-        fun createHeartRateObservation(record: HeartRateRecord, patientId: String): Bundle? {
+        fun createHeartRateObservation(records: List<HeartRateRecord>, patientId: String): Bundle? {
             val client = RestClient.getClient()
-            val bundle = RecordConverter.createHRBundle(record, patientId)
+            val bundle = HRRecordConverter.createHRBundle(records, patientId)
             return client?.transaction()?.withBundle(bundle)?.execute()
         }
     }

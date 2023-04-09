@@ -1,15 +1,16 @@
 package com.aueb.healthmonitor.recordConverters
 
 import androidx.health.connect.client.records.HeartRateRecord
+import com.aueb.healthmonitor.observationparams.HRObservationParams
 import org.hl7.fhir.r4.model.*
 import java.util.*
 
-class RecordConverter {
+class HRRecordConverter {
     companion object{
-        fun createSingleHRObservation(sample: HeartRateRecord.Sample, patientId: String): Observation
+        private fun createSingleHRObservation(sample: HeartRateRecord.Sample, patientId: String): Observation
         {
             val patient = "Patient/$patientId"
-            val params = ObservationParams.createHeartRate()
+            val params = HRObservationParams.createHeartRate()
             return Observation()
                 .setSubject(Reference(patient))
                 .setEffective(DateTimeType(Date.from(sample.time)))
@@ -19,18 +20,19 @@ class RecordConverter {
                 .setCategory(listOf(CodeableConcept().addCoding(Coding().setCode(params.categoryParams.code).setDisplay(params.categoryParams.display).setSystem(params.categoryParams.system))))
         }
 
-        fun createMultipleHRObservations(record: HeartRateRecord, patientId: String): List<Observation>{
+        private fun createMultipleHRObservations(records: List<HeartRateRecord>, patientId: String): List<Observation>{
             val observationList = mutableListOf<Observation>()
-
-            for (heartRate in record.samples) {
-                val observation = createSingleHRObservation(heartRate, patientId)
-                observationList.add(observation)
+            for(record in records) {
+                for (heartRate in record.samples) {
+                    val observation = createSingleHRObservation(heartRate, patientId)
+                    observationList.add(observation)
+                }
             }
             return observationList
         }
 
-        fun createHRBundle(record: HeartRateRecord, patientId: String): Bundle {
-            val observationList = createMultipleHRObservations(record, patientId)
+        fun createHRBundle(records: List<HeartRateRecord>, patientId: String): Bundle {
+            val observationList = createMultipleHRObservations(records, patientId)
             val bundle = Bundle()
             bundle.type = Bundle.BundleType.TRANSACTION
             for(obs in observationList){
