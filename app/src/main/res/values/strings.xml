@@ -9,5 +9,12 @@
 
     <string name="menu_item_vitals">Vital Signs</string>
     <string name="menu_item_patient">Patient</string>
+    <string name="menu_item_home">Home</string>
     <string name="menu_item_info">Information</string>
+
+    <string name="home_screen">Home</string>
+    <string name="patient_screen">Patient</string>
+    <string name="vitals_screen">Vital Signs</string>
+    <string name="info_screen">Information</string>
+
 </resources>

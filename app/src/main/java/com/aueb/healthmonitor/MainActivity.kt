@@ -4,25 +4,23 @@ package com.aueb.healthmonitor
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.aueb.healthmonitor.fhirclient.FhirServices
-import com.aueb.healthmonitor.ui.mainpage.MainPageApp
+import com.aueb.healthmonitor.ui.mainpage.MenuOptions
 import com.aueb.healthmonitor.utils.getOrCreateUUID
 //import com.aueb.healthmonitor.healthconnect.HealthConnectApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val patientUUId = getOrCreateUUID(applicationContext)
+        val healthConnectManager = (application as BaseApplication).healthConnectManager
         setContent {
-            MainPageApp()
+            MenuOptions(healthConnectManager = healthConnectManager)
         }
 
         //setContentView(R.layout.activity_main)
-        //val healthConnectManager = (application as BaseHealthConnectApp).healthConnectManager
 //
 //        setContent {
 //            //HealthConnectApp(healthConnectManager = healthConnectManager)
