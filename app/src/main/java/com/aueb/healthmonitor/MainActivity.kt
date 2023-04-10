@@ -2,25 +2,42 @@ package com.aueb.healthmonitor
 
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.health.connect.client.records.HeartRateRecord
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import com.aueb.healthmonitor.fhirclient.FhirServices
+import com.aueb.healthmonitor.ui.mainpage.MainPageApp
+import com.aueb.healthmonitor.utils.getOrCreateUUID
+//import com.aueb.healthmonitor.healthconnect.HealthConnectApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.Instant
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val patientUUId = getOrCreateUUID(applicationContext)
+        setContent {
+            MainPageApp()
+        }
 
+        //setContentView(R.layout.activity_main)
+        //val healthConnectManager = (application as BaseHealthConnectApp).healthConnectManager
+//
+//        setContent {
+//            //HealthConnectApp(healthConnectManager = healthConnectManager)
+//        }
 
         GlobalScope.launch(Dispatchers.IO) {
+//            val ss = withContext(Dispatchers.Default){
+//                val ee = FhirServices.checkServerAvailability(applicationContext)
+//            }
+//
+//            val sss = ss
+
             //Get Patient
 //            val patient = withContext(Dispatchers.Default) {
-//                FhirServices.getPatientByIdentifier("1")
+//                FhirServices.getPatientByIdentifier("1", applicationContext)
 //            }
 //            val xx = patient.toString()
 
@@ -51,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 //                )
 //                heartRecords.add(heartRateRecord2)
 //                FhirServices.createHeartRateObservation(heartRecords, "1")
-            }
+//           }
 
         }
 

@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">HealthMonitor</string>
+    <string name="message_fhir_server_running">Fhir server is up.</string>
+    <string name="message_fhir_server_down">Fhir server is not responding.</string>
+    <string name="message_fhir_resource_not_found">Fhir resource not found.</string>
+    <string name="message_fhir_transaction_failed">Fhir transaction failed.</string>
+    <string name="fhir_patient_exist">Fhir Patient already exists.</string>
+    <string name="fhir_patient_created">Fhir Patient created.</string>
+
+    <string name="menu_item_vitals">Vital Signs</string>
+    <string name="menu_item_patient">Patient</string>
+    <string name="menu_item_info">Information</string>
 </resources>
