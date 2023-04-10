@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
+import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.ui.AppScreens
 import com.aueb.healthmonitor.ui.Screen
 import com.aueb.healthmonitor.ui.drawer.DrawerBody
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MenuOptions(healthConnectManager: HealthConnectManager) {
+fun MenuOptions(healthConnectManager: HealthConnectManager, patientManager: PatientManager) {
     NavigationDrawerComposeTheme {
         val scaffoldState = rememberScaffoldState()
         val navController = rememberNavController()

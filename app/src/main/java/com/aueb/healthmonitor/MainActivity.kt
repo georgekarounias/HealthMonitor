@@ -17,9 +17,8 @@ class MainActivity : ComponentActivity() {
         val healthConnectManager = (application as BaseApplication).healthConnectManager
         val patientManager = (application as BaseApplication).patientManager
 
-
         setContent {
-            MenuOptions(healthConnectManager = healthConnectManager)
+            MenuOptions(healthConnectManager = healthConnectManager, patientManager = patientManager)
         }
 
         //setContentView(R.layout.activity_main)
