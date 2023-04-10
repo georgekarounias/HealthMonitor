@@ -3,10 +3,10 @@ package com.aueb.healthmonitor.fhirclient
 import android.content.Context
 import androidx.health.connect.client.records.HeartRateRecord
 import com.aueb.healthmonitor.R
+import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.recordConverters.HRRecordConverter
 import com.aueb.healthmonitor.staticVariables.StaticVariables
 import com.aueb.healthmonitor.utils.hashString
-import com.aueb.healthmonitor.utils.setValueToSharedPreferences
 import com.aueb.healthmonitor.utils.toastMessage
 import org.hl7.fhir.instance.model.api.IBaseResource
 import org.hl7.fhir.r4.model.*
@@ -25,14 +25,13 @@ class FhirServices {
             }
         }
 
-        fun createPatient(id: String, name: String, surname: String, sex: Enumerations.AdministrativeGender, birthDate: Date, ctx: Context): Boolean{
+        fun createPatient(id: String, name: String, surname: String, sex: Enumerations.AdministrativeGender, birthDate: Date, ctx: Context, patientManager: PatientManager): Boolean{
             val existingPatient = getPatientByIdentifier(id, null)
             if(existingPatient != null){
                 toastMessage(ctx, ctx.getString(R.string.fhir_patient_exist))
                 return false
             }
-            setValueToSharedPreferences(ctx, StaticVariables.ASP_PatientName, name)
-            setValueToSharedPreferences(ctx, StaticVariables.ASP_PatientSurname, surname)
+            patientManager.SavePatientInfo(name, surname)
             val patient = Patient()
             patient.addIdentifier().setSystem("http://example.com/patient-identifier").value = id
             patient.addName().setFamily(hashString(name)).addGiven(hashString(surname))

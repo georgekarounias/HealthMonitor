@@ -82,30 +82,6 @@ fun CreateDate(year:Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int): D
     return cal.time
 }
 
-// Generate or retrieve the UUID
-fun getOrCreateUUID(context: Context): UUID {
-    val sharedPreferences = context.getSharedPreferences(AppSharedPreferences, Context.MODE_PRIVATE)
-    val uuidString = sharedPreferences.getString(ASP_PatientId, null)
-    return if (uuidString != null) UUID.fromString(uuidString) else generateAndSaveUUID(sharedPreferences)
-}
-
-// Generate a new UUID and save it in app storage
-fun generateAndSaveUUID(sharedPreferences: SharedPreferences): UUID {
-    val uuid = UUID.randomUUID()
-    sharedPreferences.edit().putString(ASP_PatientId, uuid.toString()).apply()
-    return uuid
-}
-
-fun setValueToSharedPreferences(context: Context, key: String, value: String){
-    val sharedPreferences = context.getSharedPreferences(AppSharedPreferences, Context.MODE_PRIVATE)
-    sharedPreferences.edit().putString(key, value).apply()
-}
-
-fun getValueFromSharedPreferences(context: Context, key: String): String? {
-    val sharedPreferences = context.getSharedPreferences(AppSharedPreferences, Context.MODE_PRIVATE)
-    return sharedPreferences.getString(ASP_PatientId, null)
-}
-
 fun hashString(input: String): String {
     val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
     return bytes.joinToString("") { "%02x".format(it) }

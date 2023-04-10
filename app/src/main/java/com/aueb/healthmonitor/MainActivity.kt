@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.aueb.healthmonitor.ui.mainpage.MenuOptions
-import com.aueb.healthmonitor.utils.getOrCreateUUID
+
 //import com.aueb.healthmonitor.healthconnect.HealthConnectApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -14,8 +14,10 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val patientUUId = getOrCreateUUID(applicationContext)
         val healthConnectManager = (application as BaseApplication).healthConnectManager
+        val patientManager = (application as BaseApplication).patientManager
+
+
         setContent {
             MenuOptions(healthConnectManager = healthConnectManager)
         }

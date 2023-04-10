@@ -7,5 +7,7 @@ class StaticVariables {
         const val ASP_PatientId = "patientUuid"
         const val ASP_PatientName = "patientName"
         const val ASP_PatientSurname = "patientSurname"
+        const val ASP_PatientNameHash = "patientNameHash"
+        const val ASP_PatientSurnameHash = "patientSurnameHash"
     }
 }
