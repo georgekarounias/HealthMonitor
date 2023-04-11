@@ -1,23 +1,24 @@
 package com.aueb.healthmonitor.ui.patientscreen
 
 import android.content.Context
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.aueb.healthmonitor.patient.AppPatientInfo
 import com.aueb.healthmonitor.utils.toastMessage
 import kotlinx.coroutines.launch
 
 class PatientViewModel(private val context: Context): ViewModel(){
 
-    var appPatientInfo: MutableState<AppPatientInfo> = mutableStateOf(AppPatientInfo())
+    var name = mutableStateOf("")
+    var surname = mutableStateOf("")
+    var gender = mutableStateOf("")
+    var birthdate = mutableStateOf("")
 
     //TODO: fix logic for save patient
     fun savePatient(){
         viewModelScope.launch {
-            toastMessage(context, appPatientInfo.value.name +" "+ appPatientInfo.value.surname)
+            toastMessage(context, name.value+"/"+surname.value+"/"+gender.value)
         }
     }
 

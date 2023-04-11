@@ -17,28 +17,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.ui.components.DropDownMenu
 import com.aueb.healthmonitor.ui.getGenderOptions
 
 @Composable
-fun PatienScreen(navController: NavController, context: Context, onSave: ()->Unit){
+fun PatienScreen(navController: NavController, context: Context){
     Column(
         modifier = Modifier.padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val name = remember {
-            mutableStateOf(TextFieldValue())
-        }
-        val surname = remember {
-            mutableStateOf(TextFieldValue())
-        }
-
-        val gender = remember {
-            mutableStateOf("")
-        }
+        val viewModel: PatientViewModel = viewModel(
+            factory = PatientViewModelFactory(context)
+        )
 
         val genderOptions = getGenderOptions()
         Text(
@@ -50,29 +44,29 @@ fun PatienScreen(navController: NavController, context: Context, onSave: ()->Uni
 
         TextField(
             label = { Text(text = stringResource(id = R.string.patient_screen_form_name)) },
-            value = name.value,
-            onValueChange = { name.value = it }
+            value = viewModel.name.value,
+            onValueChange = { viewModel.name.value = it }
         )
 
         Spacer(modifier = Modifier.height(15.dp))
 
         TextField(
             label = { Text(text = stringResource(id = R.string.patient_screen_form_surname)) },
-            value = surname.value,
-            onValueChange = { surname.value = it }
+            value = viewModel.surname.value,
+            onValueChange = { viewModel.surname.value = it }
         )
 
         Spacer(modifier = Modifier.height(15.dp))
 
         DropDownMenu(items = genderOptions, onItemSelected = {
-            gender.value = it.toCode()
+            viewModel.gender.value = it.toCode()
         })
 
         Spacer(modifier = Modifier.height(15.dp))
 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
-                onClick = {onSave()},
+                onClick = {viewModel.savePatient()},
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .fillMaxWidth()

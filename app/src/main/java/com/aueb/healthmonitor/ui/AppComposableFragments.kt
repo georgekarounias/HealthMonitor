@@ -31,10 +31,7 @@ fun AppScreens(
             HomeScreen()
         }
         composable(Screen.PatientScreen.route){
-            val viewModel: PatientViewModel = viewModel(
-                factory = PatientViewModelFactory(context)
-            )
-            PatienScreen(navController, context, onSave = {viewModel.savePatient()})
+            PatienScreen(navController, context)
         }
         composable(Screen.VitalsScreen.route){
             VitalsScreen()
