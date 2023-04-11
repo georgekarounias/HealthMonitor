@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,8 @@ import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.ui.homescreen.HomeScreen
 import com.aueb.healthmonitor.ui.infoscreen.InfoScreen
 import com.aueb.healthmonitor.ui.patientscreen.PatienScreen
+import com.aueb.healthmonitor.ui.patientscreen.PatientViewModel
+import com.aueb.healthmonitor.ui.patientscreen.PatientViewModelFactory
 import com.aueb.healthmonitor.ui.vitalsscreen.VitalsScreen
 
 @Composable
@@ -28,7 +31,10 @@ fun AppScreens(
             HomeScreen()
         }
         composable(Screen.PatientScreen.route){
-            PatienScreen()
+            val viewModel: PatientViewModel = viewModel(
+                factory = PatientViewModelFactory(context)
+            )
+            PatienScreen(navController, context, onSave = {viewModel.savePatient()})
         }
         composable(Screen.VitalsScreen.route){
             VitalsScreen()

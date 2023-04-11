@@ -17,4 +17,8 @@
     <string name="vitals_screen">Vital Signs</string>
     <string name="info_screen">Information</string>
 
+    <string name="patient_screen_form_header">Your Information</string>
+    <string name="patient_screen_form_name">Name</string>
+    <string name="patient_screen_form_surname">Surname</string>
+    <string name="patient_screen_create_btn">Save</string>
 </resources>
