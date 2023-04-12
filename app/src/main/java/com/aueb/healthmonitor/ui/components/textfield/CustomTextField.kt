@@ -25,6 +25,7 @@ fun CustomTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
+    readOnly: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -56,7 +57,8 @@ fun CustomTextField(
                 .fillMaxWidth()
                 .onFocusChanged { isFocused = it.isFocused }
                 .padding(bottom = 8.dp),
-            textStyle = MaterialTheme.typography.body1
+            textStyle = MaterialTheme.typography.body1,
+            readOnly = readOnly
         )
     }
 }

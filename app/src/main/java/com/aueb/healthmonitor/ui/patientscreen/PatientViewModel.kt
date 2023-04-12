@@ -8,16 +8,19 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.aueb.healthmonitor.fhirclient.FhirServices
+import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.ui.getGernderListFirstCode
 import com.aueb.healthmonitor.utils.dateToIsoString
 import com.aueb.healthmonitor.utils.toastMessage
 import kotlinx.coroutines.launch
+import org.hl7.fhir.r4.model.Patient
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
-class PatientViewModel(private val context: Context): ViewModel(){
+class PatientViewModel(private val context: Context, private val patientManager: PatientManager): ViewModel(){
 
     var isFormValidated: Boolean by mutableStateOf(false)
     var readOnly: Boolean by mutableStateOf(false)
@@ -26,6 +29,10 @@ class PatientViewModel(private val context: Context): ViewModel(){
     var gender: String by  mutableStateOf(getGernderListFirstCode())
     var birthdate: Date by  mutableStateOf(Date())
     var birthdateStr: String by  mutableStateOf("")
+
+    init{
+        initPatient()
+    }
 
     fun UpdateName(value: String){
         name = value.trim()
@@ -45,9 +52,23 @@ class PatientViewModel(private val context: Context): ViewModel(){
         isFormValidated = isFormValid()
     }
 
-    //TODO : Fix logic: make a fhir call to check if client exists. If exists show info else show form
-    private fun doesPatientIdAlreadyExist(){
-        readOnly = false
+    private fun initPatient(){
+        viewModelScope.launch {
+            val patientId = patientManager.GetId()
+            if(patientId!=null) {
+                val patient = FhirServices.getPatientByIdentifier(patientId, context)
+                if(patient != null){
+                    readOnly = (patient as Patient).id == patientId
+                    if(readOnly){
+                        name = patientManager.GetName() ?: ""
+                        surname = patientManager.GetSurname() ?: ""
+                        gender  = patient.gender?.toCode() ?: ""
+                        birthdate = patient.birthDate ?: Date() //TODO: fix
+                        birthdateStr = patient.birthDate?.toString() ?: "" //TODO: fix
+                    }
+                }
+            }
+        }
     }
 
     private fun isFormValid(): Boolean{
@@ -71,11 +92,11 @@ class PatientViewModel(private val context: Context): ViewModel(){
 
 }
 
-class PatientViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class PatientViewModelFactory(private val context: Context, private val patientManager: PatientManager) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PatientViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return PatientViewModel(context) as T
+            return PatientViewModel(context, patientManager) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

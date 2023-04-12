@@ -19,13 +19,14 @@ import com.aueb.healthmonitor.ui.components.datepicker.DatePicker
 import com.aueb.healthmonitor.ui.getGenderOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.LaunchedEffect
+import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.ui.components.headertitle.Header
 import com.aueb.healthmonitor.ui.components.textfield.CustomTextField
 
 @Composable
-fun PatienScreen(navController: NavController, context: Context){
+fun PatienScreen(navController: NavController, context: Context, patientManager: PatientManager){
     val viewModel: PatientViewModel = viewModel(
-        factory = PatientViewModelFactory(context)
+        factory = PatientViewModelFactory(context, patientManager)
     )
 
     LaunchedEffect(viewModel) {
@@ -50,6 +51,7 @@ fun PatienScreen(navController: NavController, context: Context){
                 label = stringResource(id = R.string.patient_screen_form_name),
                 value = viewModel.name,
                 onValueChange = { viewModel.UpdateName(it) },
+                readOnly = viewModel.readOnly,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
 
@@ -59,6 +61,7 @@ fun PatienScreen(navController: NavController, context: Context){
                 label = stringResource(id = R.string.patient_screen_form_surname),
                 value = viewModel.surname,
                 onValueChange = { viewModel.UpdateSurname(it) },
+                readOnly = viewModel.readOnly,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
 
@@ -78,9 +81,13 @@ fun PatienScreen(navController: NavController, context: Context){
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            DatePicker(onDateSelected = {
-                viewModel.UpdateBirthDate(it)
-            })
+            if(viewModel.readOnly){
+
+            }else {
+                DatePicker(onDateSelected = {
+                    viewModel.UpdateBirthDate(it)
+                })
+            }
         }
 
         if(viewModel.isFormValidated){

@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
+import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.ui.homescreen.HomeScreen
 import com.aueb.healthmonitor.ui.infoscreen.InfoScreen
 import com.aueb.healthmonitor.ui.patientscreen.PatienScreen
@@ -21,6 +22,7 @@ import com.aueb.healthmonitor.ui.vitalsscreen.VitalsScreen
 fun AppScreens(
     navController: NavHostController,
     healthConnectManager: HealthConnectManager,
+    patientManager: PatientManager,
     scaffoldState: ScaffoldState
 ){
     val scope = rememberCoroutineScope()
@@ -31,7 +33,7 @@ fun AppScreens(
             HomeScreen()
         }
         composable(Screen.PatientScreen.route){
-            PatienScreen(navController, context)
+            PatienScreen(navController, context, patientManager)
         }
         composable(Screen.VitalsScreen.route){
             VitalsScreen()

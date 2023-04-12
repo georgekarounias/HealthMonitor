@@ -93,7 +93,7 @@ fun MenuOptions(healthConnectManager: HealthConnectManager, patientManager: Pati
                 )
             }
         ) {
-            AppScreens(navController, healthConnectManager, scaffoldState)
+            AppScreens(navController, healthConnectManager, patientManager, scaffoldState)
         }
     }
 }
