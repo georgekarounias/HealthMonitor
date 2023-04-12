@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.LaunchedEffect
 import com.aueb.healthmonitor.ui.components.headertitle.Header
 import com.aueb.healthmonitor.ui.components.textfield.CustomTextField
-import com.aueb.healthmonitor.ui.getGernderListFirstCode
-import com.aueb.healthmonitor.ui.getGernderListFirstElement
 
 @Composable
 fun PatienScreen(navController: NavController, context: Context){

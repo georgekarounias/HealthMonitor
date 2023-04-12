@@ -2,10 +2,17 @@ package com.aueb.healthmonitor.ui.components.datepicker
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,16 +60,40 @@ fun DatePicker(onDateSelected: (Date) -> Unit){
         }, mYear, mMonth, mDay
     )
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-
-        Button(onClick = {
+    Box(
+        modifier = Modifier.clickable{
             mDatePickerDialog.show()
-        }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF0F9D58)) ) {
-            Text(text = stringResource(id = R.string.date_picker_open_modal_btn_title), color = Color.White)
         }
-
-        Spacer(modifier = Modifier.size(10.dp))
-
-        Text(text = stringResource(id = R.string.date_picker_selected_date_prefix)+": ${mDate.value}", fontSize = 10.sp, textAlign = TextAlign.Center)
+    ){
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .fillMaxWidth(0.9f)
+                .height(60.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+                    .padding(2.dp)
+            )
+            Text(
+                text = stringResource(id = R.string.date_picker_selected_date_prefix) + ": ${mDate.value}",
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(8.dp)
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.CenterVertically).padding(end = 15.dp)
+            )
+        }
     }
 }
