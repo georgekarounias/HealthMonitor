@@ -1,6 +1,7 @@
 package com.aueb.healthmonitor.ui
 
 import com.aueb.healthmonitor.R
+import com.aueb.healthmonitor.ui.components.dropdown.MenuItem
 import org.hl7.fhir.r4.model.Enumerations
 
 enum class Screen(val route: String, val titleId: Int, val hasMenuItem: Boolean = true) {
@@ -10,15 +11,25 @@ enum class Screen(val route: String, val titleId: Int, val hasMenuItem: Boolean 
     InfoScreen("info_screen", R.string.info_screen)
 }
 
+fun getGernderListFirstElement(): MenuItem{
+    val firstElement = getGenderOptions().firstOrNull()
+    if(firstElement == null){
+        val value = Enumerations.AdministrativeGender.MALE
+        return MenuItem(name = value.name, code = value.toCode())
+    }
+    return firstElement
+}
+
 fun getGernderListFirstCode(): String{
     val firstElement = getGenderOptions().firstOrNull()
     if(firstElement == null){
         return Enumerations.AdministrativeGender.MALE.toCode()
     }
-    return firstElement.toCode()
+    return firstElement.code
 }
 
-fun getGenderOptions(): List<Enumerations.AdministrativeGender>{
+fun getGenderOptions(): List<MenuItem>{
     val sequence = Enumerations.AdministrativeGender.values().asSequence().filter{ x->x.name != "NULL"}
-    return sequence.toList()
+    val list = sequence.map{x-> MenuItem(name = x.name, code = x.toCode())}.toList()
+    return list
 }

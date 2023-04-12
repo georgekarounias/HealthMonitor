@@ -1,61 +1,77 @@
-package com.aueb.healthmonitor.ui.components
+package com.aueb.healthmonitor.ui.components.dropdown
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender
 
 @Composable
 fun DropDownMenu(
-    items: List<AdministrativeGender>,
-    onItemSelected: (AdministrativeGender) -> Unit,
-    modifier: Modifier = Modifier,
+    items: List<MenuItem>,
+    label: String,
+    selectedItem: MenuItem?,
+    onSelected: (MenuItem) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(items[0].toCode()) }
+    val expanded = remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.wrapContentSize()) {
-        Box(
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(text = label)
+
+        Surface(
+            elevation = 1.dp,
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = true }
-                .background(Color.LightGray)
+                .padding(vertical = 8.dp)
         ) {
-            Text(
-                text = selectedItem,
-                modifier = Modifier.padding(16.dp),
-                color = Color.Black
-            )
-            Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
-                contentDescription = "DropDown Arrow",
-                modifier = Modifier.align(alignment = Alignment.CenterEnd)
-            )
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            items.forEach { item ->
-                DropdownMenuItem(onClick = {
-                    selectedItem = item.toCode()
-                    onItemSelected(item)
-                    expanded = false
-                }) {
-                    Text(
-                        text = item.toCode(),
-                        modifier = Modifier.padding(16.dp),
-                        color = Color.Black
-                    )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = { expanded.value = true })
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = selectedItem?.name ?: items.first().name,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null
+                        )
+                    }
                 }
+
+                DropdownMenu(
+                    expanded = expanded.value,
+                    onDismissRequest = { expanded.value = false }
+                ) {
+                    Column {
+                        items.forEach {  item ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    onSelected(item)
+                                    expanded.value = false
+                                }
+                            ) {
+                                Text(text = item.name)
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }

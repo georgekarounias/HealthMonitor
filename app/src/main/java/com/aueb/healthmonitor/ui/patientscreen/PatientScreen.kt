@@ -5,23 +5,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aueb.healthmonitor.R
-import com.aueb.healthmonitor.ui.components.DropDownMenu
+import com.aueb.healthmonitor.ui.components.dropdown.DropDownMenu
 import com.aueb.healthmonitor.ui.components.datepicker.DatePicker
 import com.aueb.healthmonitor.ui.getGenderOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.LaunchedEffect
+import com.aueb.healthmonitor.ui.components.headertitle.Header
+import com.aueb.healthmonitor.ui.components.textfield.CustomTextField
+import com.aueb.healthmonitor.ui.getGernderListFirstCode
+import com.aueb.healthmonitor.ui.getGernderListFirstElement
 
 @Composable
 fun PatienScreen(navController: NavController, context: Context){
@@ -40,32 +41,42 @@ fun PatienScreen(navController: NavController, context: Context){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Text(
+            Header(
                 text = stringResource(id = R.string.patient_screen_form_header),
-                style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Default)
+                fontSize = 30.sp
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            TextField(
-                label = { Text(text = stringResource(id = R.string.patient_screen_form_name)) },
+            CustomTextField(
+                label = stringResource(id = R.string.patient_screen_form_name),
                 value = viewModel.name,
-                onValueChange = { viewModel.UpdateName(it) }
+                onValueChange = { viewModel.UpdateName(it) },
+                modifier = Modifier.fillMaxWidth(0.8f)
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            TextField(
-                label = { Text(text = stringResource(id = R.string.patient_screen_form_surname)) },
+            CustomTextField(
+                label = stringResource(id = R.string.patient_screen_form_surname),
                 value = viewModel.surname,
-                onValueChange = { viewModel.UpdateSurname(it) }
+                onValueChange = { viewModel.UpdateSurname(it) },
+                modifier = Modifier.fillMaxWidth(0.8f)
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            DropDownMenu(items = genderOptions, onItemSelected = {
-                viewModel.UpdateGender(it.toCode())
-            })
+            Box(modifier = Modifier.fillMaxWidth(0.8f)) {
+                DropDownMenu(
+                    items = genderOptions,
+                    label = "Gender",
+                    selectedItem = genderOptions.find { it.code == viewModel.gender }
+                        ?: genderOptions.first(),
+                    onSelected = {
+                        viewModel.UpdateGender(it.code)
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.height(15.dp))
 
