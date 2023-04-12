@@ -95,6 +95,14 @@ fun toastMessage(ctx: Context?, message: String?){
         Toast.makeText(ctx, message, Toast.LENGTH_LONG).show()
     }
 }
+
+fun dateToIsoString(date: Date): String {
+    //val formatter = DateTimeFormatter.ISO_DATE_TIME//does not ignore time and time zone
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val instant = date.toInstant()
+    val zonedDateTime = instant.atZone(ZoneId.systemDefault())
+    return formatter.format(zonedDateTime)
+}
 //fun <T>convertToJsonString(data: T):String{
 //    val gsonPretty = GsonBuilder().setPrettyPrinting().create()
 //    val jsonString: String = gsonPretty.toJson(data)

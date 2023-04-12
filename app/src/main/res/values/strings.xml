@@ -20,5 +20,11 @@
     <string name="patient_screen_form_header">Your Information</string>
     <string name="patient_screen_form_name">Name</string>
     <string name="patient_screen_form_surname">Surname</string>
+    <string name="patient_screen_form_birthdate">Birthdate</string>
     <string name="patient_screen_create_btn">Save</string>
+
+    <string name="date_picker_open_modal_btn_title">Select birth date</string>
+    <string name="date_picker_selected_date_prefix">Select birth date</string>
+
+
 </resources>
