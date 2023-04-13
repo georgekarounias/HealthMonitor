@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aueb.healthmonitor.R
+import com.aueb.healthmonitor.ui.HorizontalLineSeparator
 
 @Composable
 fun DrawerHeader() {
@@ -55,6 +56,7 @@ fun DrawerBody(
                     modifier = Modifier.weight(1f)
                 )
             }
+            HorizontalLineSeparator()
         }
     }
 }

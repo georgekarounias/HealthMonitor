@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import androidx.compose.runtime.mutableStateOf
 import com.aueb.healthmonitor.staticVariables.StaticVariables
 import com.aueb.healthmonitor.utils.hashString
+import org.hl7.fhir.r4.model.Identifier
+import org.hl7.fhir.r4.model.Patient
 import java.util.*
 
 class PatientManager(private val context: Context){
@@ -26,7 +28,7 @@ class PatientManager(private val context: Context){
         setValueToSharedPreferences(StaticVariables.ASP_PatientName, name)
         setValueToSharedPreferences(StaticVariables.ASP_PatientSurname, surname)
         setValueToSharedPreferences(StaticVariables.ASP_PatientNameHash, hashString(name))
-        setValueToSharedPreferences(StaticVariables.ASP_PatientSurname, hashString(surname))
+        setValueToSharedPreferences(StaticVariables.ASP_PatientSurnameHash, hashString(surname))
     }
 
     fun GetName(): String?{
@@ -60,6 +62,14 @@ class PatientManager(private val context: Context){
         val hashedName = GetHashedName()
         val hashedSurname = GetHashedSurname()
         return (hashString(name) == hashedName && hashString(surname) == hashedSurname)
+    }
+
+    fun getFhirPatientIdentifiers(patient: Patient): List<Identifier>{
+        return patient.identifier.asSequence().toList()
+    }
+
+    fun checkIfPatientHasId(patient: Patient, id: String):Boolean{
+        return getFhirPatientIdentifiers(patient).any{x->x.value == id}
     }
 
     //TODO: function for changing profile

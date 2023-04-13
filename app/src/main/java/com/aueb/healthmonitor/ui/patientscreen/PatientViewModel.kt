@@ -59,7 +59,7 @@ class PatientViewModel(private val context: Context, private val patientManager:
                 val patient = FhirServices.getPatientByIdentifier(patientId, context)
                 withContext(Dispatchers.Main) {
                     if (patient != null) {
-                        readOnly = (patient as Patient).id == patientId
+                        readOnly = patientManager.checkIfPatientHasId(patient as Patient, patientId)
                         if (readOnly) {
                             name = patientManager.GetName() ?: ""
                             surname = patientManager.GetSurname() ?: ""

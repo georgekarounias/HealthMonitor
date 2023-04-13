@@ -5,7 +5,7 @@ import androidx.health.connect.client.records.HeartRateRecord
 import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.recordConverters.HRRecordConverter
-import com.aueb.healthmonitor.staticVariables.StaticVariables
+import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.PatientIdSystemCode
 import com.aueb.healthmonitor.utils.hashString
 import com.aueb.healthmonitor.utils.toastMessage
 import org.hl7.fhir.instance.model.api.IBaseResource
@@ -33,7 +33,7 @@ class FhirServices {
             }
             patientManager.SavePatientInfo(name, surname)
             val patient = Patient()
-            patient.addIdentifier().setSystem("http://example.com/patient-identifier").value = id
+            patient.addIdentifier().setSystem(PatientIdSystemCode).value = id
             patient.addName().setFamily(hashString(name)).addGiven(hashString(surname))
             patient.gender = sex
             patient.birthDate = birthDate
@@ -51,7 +51,13 @@ class FhirServices {
         fun getPatientByIdentifier(id: String, ctx: Context?): IBaseResource? {
             val client = RestClient.getClient()
             try {
-                return client!!.read().resource("Patient").withId(id).execute()
+                val results: Bundle = client!!.search<Bundle>()
+                    .forResource(Patient::class.java)
+                    .where(Patient.IDENTIFIER.exactly().systemAndCode(PatientIdSystemCode, id))
+                    .returnBundle(Bundle::class.java)
+                    .execute()
+                 var fhirPatient = results.entry.asSequence().first().resource as Patient
+                return fhirPatient
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_resource_not_found))
                 return null
