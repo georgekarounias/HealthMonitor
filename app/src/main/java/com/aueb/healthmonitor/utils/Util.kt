@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.ASP_PatientId
 import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.AppSharedPreferences
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -98,10 +99,26 @@ fun toastMessage(ctx: Context?, message: String?){
 
 fun dateToIsoString(date: Date): String {
     //val formatter = DateTimeFormatter.ISO_DATE_TIME//does not ignore time and time zone
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val instant = date.toInstant()
-    val zonedDateTime = instant.atZone(ZoneId.systemDefault())
-    return formatter.format(zonedDateTime)
+    try{
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val instant = date.toInstant()
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault())
+        return formatter.format(zonedDateTime)
+    }catch (e: Exception){
+        return ""
+    }
+
+}
+
+fun isoStringToDate(dateStr: String): Date{
+    try {
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        val date = formatter.parse(dateStr)
+        return date
+    }catch (e: Exception) {
+        return Date()
+    }
 }
 //fun <T>convertToJsonString(data: T):String{
 //    val gsonPretty = GsonBuilder().setPrettyPrinting().create()

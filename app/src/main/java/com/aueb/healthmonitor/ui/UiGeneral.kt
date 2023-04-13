@@ -33,3 +33,7 @@ fun getGenderOptions(): List<MenuItem>{
     val list = sequence.map{x-> MenuItem(name = x.name, code = x.toCode())}.toList()
     return list
 }
+
+fun getGenderByCode(code: String): Enumerations.AdministrativeGender{
+    return Enumerations.AdministrativeGender.values().asSequence().filter{ x->x.toCode() == code}.first()
+}

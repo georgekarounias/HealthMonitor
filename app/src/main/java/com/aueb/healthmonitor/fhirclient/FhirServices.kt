@@ -43,7 +43,7 @@ class FhirServices {
                 toastMessage(ctx, ctx.getString(R.string.fhir_patient_created))
                 return true
             }catch (e: Exception){
-                toastMessage(ctx, ctx.getString(R.string.message_fhir_resource_not_found))
+                toastMessage(ctx, ctx.getString(R.string.message_fhir_error_on_patient_create))
                 return false
             }
         }

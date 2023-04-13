@@ -3,22 +3,22 @@ package com.aueb.healthmonitor.ui.patientscreen
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.aueb.healthmonitor.fhirclient.FhirServices
 import com.aueb.healthmonitor.patient.PatientManager
+import com.aueb.healthmonitor.ui.getGenderByCode
 import com.aueb.healthmonitor.ui.getGernderListFirstCode
 import com.aueb.healthmonitor.utils.dateToIsoString
 import com.aueb.healthmonitor.utils.toastMessage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.hl7.fhir.r4.model.Patient
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
+
 
 class PatientViewModel(private val context: Context, private val patientManager: PatientManager): ViewModel(){
 
@@ -53,18 +53,20 @@ class PatientViewModel(private val context: Context, private val patientManager:
     }
 
     private fun initPatient(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val patientId = patientManager.GetId()
             if(patientId!=null) {
                 val patient = FhirServices.getPatientByIdentifier(patientId, context)
-                if(patient != null){
-                    readOnly = (patient as Patient).id == patientId
-                    if(readOnly){
-                        name = patientManager.GetName() ?: ""
-                        surname = patientManager.GetSurname() ?: ""
-                        gender  = patient.gender?.toCode() ?: ""
-                        birthdate = patient.birthDate ?: Date() //TODO: fix
-                        birthdateStr = patient.birthDate?.toString() ?: "" //TODO: fix
+                withContext(Dispatchers.Main) {
+                    if (patient != null) {
+                        readOnly = (patient as Patient).id == patientId
+                        if (readOnly) {
+                            name = patientManager.GetName() ?: ""
+                            surname = patientManager.GetSurname() ?: ""
+                            gender = patient.gender?.toCode() ?: ""
+                            birthdate = patient.birthDate ?: Date()
+                            birthdateStr = dateToIsoString(patient.birthDate)
+                        }
                     }
                 }
             }
@@ -85,8 +87,10 @@ class PatientViewModel(private val context: Context, private val patientManager:
     }
     //TODO: fix logic for save patient
     fun savePatient(){
-        viewModelScope.launch {
-            toastMessage(context, name+"/"+surname+"/"+gender+"/"+dateToIsoString(birthdate))
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val fhirGender = getGenderByCode(gender)
+            FhirServices.createPatient(patientManager.GetId() ?: "", name, surname, fhirGender, birthdate, context, patientManager)
         }
     }
 

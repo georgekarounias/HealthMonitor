@@ -3,6 +3,7 @@
     <string name="message_fhir_server_running">Fhir server is up.</string>
     <string name="message_fhir_server_down">Fhir server is not responding.</string>
     <string name="message_fhir_resource_not_found">Fhir resource not found.</string>
+    <string name="message_fhir_error_on_patient_create">Could not create patient.</string>
     <string name="message_fhir_transaction_failed">Fhir transaction failed.</string>
     <string name="fhir_patient_exist">Fhir Patient already exists.</string>
     <string name="fhir_patient_created">Fhir Patient created.</string>
