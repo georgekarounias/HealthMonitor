@@ -16,6 +16,7 @@ import com.aueb.healthmonitor.ui.infoscreen.InfoScreen
 import com.aueb.healthmonitor.ui.patientscreen.PatienScreen
 import com.aueb.healthmonitor.ui.patientscreen.PatientViewModel
 import com.aueb.healthmonitor.ui.patientscreen.PatientViewModelFactory
+import com.aueb.healthmonitor.ui.settingsscreen.SettingsScreen
 import com.aueb.healthmonitor.ui.vitalsscreen.VitalsScreen
 
 @Composable
@@ -40,6 +41,9 @@ fun AppScreens(
         }
         composable(Screen.InfoScreen.route){
             InfoScreen()
+        }
+        composable(Screen.SettingScreen.route){
+            SettingsScreen()
         }
     }
 }

@@ -75,6 +75,13 @@ fun MenuOptions(healthConnectManager: HealthConnectManager, patientManager: Pati
                             screenInfo = Screen.InfoScreen,
                             icon = Icons.Default.Info
                         ),
+                        MenuItem(
+                            id = "setting",
+                            title = stringResource(id = R.string.menu_item_settings),
+                            contentDescription = "Settings",
+                            screenInfo = Screen.SettingScreen,
+                            icon = Icons.Default.Settings
+                        ),
                     ),
                     onItemClick = {
                         navController.navigate(it.screenInfo.route){

@@ -12,6 +12,7 @@
     <string name="menu_item_patient">Patient</string>
     <string name="menu_item_home">Home</string>
     <string name="menu_item_info">Information</string>
+    <string name="menu_item_settings">Settings</string>
 
     <string name="home_screen">Home</string>
     <string name="patient_screen">Patient</string>
@@ -23,6 +24,9 @@
     <string name="patient_screen_form_surname">Surname</string>
     <string name="patient_screen_form_birthdate">Birthdate</string>
     <string name="patient_screen_create_btn">Save</string>
+
+    <string name="settings_screen_header">Settings</string>
+    <string name="settings_screen_hapi_fhir_url">Hapi Fhir Server Url</string>
 
     <string name="date_picker_open_modal_btn_title">Select birth date</string>
     <string name="date_picker_selected_date_prefix">Select birth date</string>
