@@ -23,6 +23,9 @@ import java.util.Date
 class PatientViewModel(private val context: Context, private val patientManager: PatientManager): ViewModel(){
 
     var isFormValidated: Boolean by mutableStateOf(false)
+    var isLoading: Boolean by mutableStateOf(false)
+    var loadingTitle: String by mutableStateOf("")
+    var loadingText: String by mutableStateOf("")
     var readOnly: Boolean by mutableStateOf(false)
     var name: String by mutableStateOf("")
     var surname: String by  mutableStateOf("")
@@ -52,8 +55,16 @@ class PatientViewModel(private val context: Context, private val patientManager:
         isFormValidated = isFormValid()
     }
 
+    private fun setLoaderInfo(_show: Boolean, _title: String, _text: String){
+        isLoading = _show
+        loadingText = _text
+        loadingTitle = _title
+    }
     private fun initPatient(){
         viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main){
+                setLoaderInfo(true, "Loading_res", "Please wait..._res")
+            }
             val patientId = patientManager.GetId()
             if(patientId!=null) {
                 val patient = FhirServices.getPatientByIdentifier(patientId, context)
@@ -70,6 +81,9 @@ class PatientViewModel(private val context: Context, private val patientManager:
                     }
                 }
             }
+            withContext(Dispatchers.Main){
+                setLoaderInfo(false, "", "")
+            }
         }
     }
 
@@ -85,13 +99,19 @@ class PatientViewModel(private val context: Context, private val patientManager:
         }
         return true
     }
-    //TODO: fix logic for save patient
-    fun savePatient(){
 
+    fun savePatient(){
         viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main){
+                setLoaderInfo(true, "Loading_res", "Please wait..._res")
+            }
             val fhirGender = getGenderByCode(gender)
             FhirServices.createPatient(patientManager.GetId() ?: "", name, surname, fhirGender, birthdate, context, patientManager)
+            withContext(Dispatchers.Main){
+                setLoaderInfo(false, "", "")
+            }
         }
+
     }
 
 }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.LaunchedEffect
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.ui.components.headertitle.Header
+import com.aueb.healthmonitor.ui.components.loader.LoadingDialog
 import com.aueb.healthmonitor.ui.components.textfield.CustomTextField
 
 @Composable
@@ -34,6 +35,9 @@ fun PatienScreen(navController: NavController, context: Context, patientManager:
     }
 
     val genderOptions = getGenderOptions()
+
+    LoadingDialog(viewModel.isLoading, viewModel.loadingTitle, viewModel.loadingText)
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
