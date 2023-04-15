@@ -121,7 +121,7 @@ class FhirServices {
                     .where(Device.PATIENT.hasId(existingPatient.idElement.value))
                     .returnBundle(Bundle::class.java)
                     .execute()
-                return deviceResults.entry.asSequence().toList() as List<Device>
+                return deviceResults.entry.asSequence().map{x->x.resource as Device}.toList()
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_device_not_found))
                 return listOf()
