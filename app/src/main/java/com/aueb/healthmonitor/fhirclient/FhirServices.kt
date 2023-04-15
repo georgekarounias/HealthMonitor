@@ -2,15 +2,18 @@ package com.aueb.healthmonitor.fhirclient
 
 import android.content.Context
 import androidx.health.connect.client.records.HeartRateRecord
+import ca.uhn.fhir.rest.api.MethodOutcome
 import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.recordConverters.HRRecordConverter
 import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.PatientIdSystemCode
 import com.aueb.healthmonitor.utils.hashString
 import com.aueb.healthmonitor.utils.toastMessage
+import org.hl7.fhir.instance.model.api.IBaseBundle
 import org.hl7.fhir.instance.model.api.IBaseResource
 import org.hl7.fhir.r4.model.*
-import java.util.Date
+import java.util.*
+
 
 class FhirServices {
     companion object{
@@ -72,6 +75,56 @@ class FhirServices {
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
                 return null
+            }
+        }
+
+        fun saveDeviceInfo(manufacturer: String, model: String, patientId: String, ctx: Context?): MethodOutcome?{
+            val existingPatient = getPatientByIdentifier(patientId, null)
+            if(existingPatient == null){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_not_found))
+                return null
+            }
+            val device = Device()
+            device.type.text = "Smart Watch"
+            device.manufacturer = manufacturer
+            device.modelNumber = model
+            val patient = existingPatient as Patient
+            val patientRef = Reference(patient.id)
+            patientRef.display = patient.nameFirstRep.nameAsSingleString
+            device.patient = patientRef
+
+            val client = RestClient.getClient()
+            try {
+                val deviceOutcome: MethodOutcome = client!!.create()
+                    .resource(device)
+                    .execute()
+                return deviceOutcome
+            }catch (e: Exception){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_not_found))
+                return null
+            }
+        }
+
+        fun getConnectedDevices(patientId: String, ctx: Context?): List<Device>{
+            // search for all devices
+            val existingPatient = getPatientByIdentifier(patientId, null)
+            if(existingPatient == null){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_device_not_found))
+                return listOf()
+            }
+            val client = RestClient.getClient()
+            try {
+                // search for the patient's devices
+                val deviceResults: Bundle = client!!
+                    .search<IBaseBundle>()
+                    .forResource(Device::class.java)
+                    .where(Device.PATIENT.hasId(existingPatient.idElement.value))
+                    .returnBundle(Bundle::class.java)
+                    .execute()
+                return deviceResults.entry.asSequence().toList() as List<Device>
+            }catch (e: Exception){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_device_not_found))
+                return listOf()
             }
         }
     }

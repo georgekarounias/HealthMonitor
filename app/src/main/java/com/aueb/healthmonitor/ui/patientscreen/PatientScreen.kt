@@ -86,11 +86,26 @@ fun PatienScreen(navController: NavController, context: Context, patientManager:
             Spacer(modifier = Modifier.height(15.dp))
 
             if(viewModel.readOnly){
-
+                CustomTextField(
+                    label = stringResource(id = R.string.patient_screen_form_birthdate),
+                    value = viewModel.birthdateStr,
+                    onValueChange = {  },
+                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                )
             }else {
                 DatePicker(onDateSelected = {
                     viewModel.UpdateBirthDate(it)
                 })
+            }
+
+            if(viewModel.readOnly){
+                Spacer(modifier = Modifier.height(15.dp))
+                //TODO : add component to show devices
+                Text("TODO get list of devices")
+                Spacer(modifier = Modifier.height(15.dp))
+                //TODO : fix + button to add show form for devices
+                Text("TODO add dynamic list of devices")
             }
         }
 

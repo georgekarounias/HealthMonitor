@@ -7,6 +7,8 @@
     <string name="message_fhir_transaction_failed">Fhir transaction failed.</string>
     <string name="fhir_patient_exist">Fhir Patient already exists.</string>
     <string name="fhir_patient_created">Fhir Patient created.</string>
+    <string name="message_fhir_patient_not_found">Please create a Fhir patient first.</string>
+    <string name="message_fhir_patient_device_not_found">There are not connected devices.</string>
 
     <string name="menu_item_vitals">Vital Signs</string>
     <string name="menu_item_patient">Patient</string>
