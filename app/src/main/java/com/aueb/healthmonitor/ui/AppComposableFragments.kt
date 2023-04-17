@@ -32,8 +32,12 @@ fun AppScreens(
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
         val availability by healthConnectManager.availability
         composable(Screen.HomeScreen.route){
-            HomeScreen(healthConnectAvailability = HealthConnectClient.SDK_AVAILABLE,
-                onResumeAvailabilityCheck = {})
+            HomeScreen(
+                healthConnectAvailability = availability,
+                onResumeAvailabilityCheck = {
+                    healthConnectManager.checkAvailability()
+                }
+            )
         }
         composable(Screen.PatientScreen.route){
             PatienScreen(navController, context, patientManager)

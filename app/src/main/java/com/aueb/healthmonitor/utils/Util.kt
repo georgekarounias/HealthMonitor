@@ -1,16 +1,15 @@
 package com.aueb.healthmonitor.utils
 
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.widget.Toast
-import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.ASP_PatientId
-import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.AppSharedPreferences
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
+
 
 fun dateTimeWithOffsetOrDefault(time: Instant, offset: ZoneOffset?): ZonedDateTime =
     if (offset != null) {

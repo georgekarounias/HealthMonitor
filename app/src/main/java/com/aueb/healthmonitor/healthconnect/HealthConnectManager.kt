@@ -77,6 +77,7 @@ class HealthConnectManager(private val context: Context) {
     var availability = mutableStateOf(SDK_UNAVAILABLE)
         private set
 
+
     fun checkAvailability() {
         availability.value = HealthConnectClient.sdkStatus(context)
     }
