@@ -1,29 +1,37 @@
 package com.aueb.healthmonitor.healthconnect
 
+
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Resources.NotFoundException
 import android.os.Build
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.mutableStateOf
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.HealthConnectClient.Companion.SDK_UNAVAILABLE
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.changes.Change
-import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ChangesTokenRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.response.InsertRecordsResponse
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.units.Energy
+import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
+import androidx.health.connect.client.units.Velocity
+import com.aueb.healthmonitor.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
+import kotlin.random.Random
 import kotlin.reflect.KClass
-
-
 
 // The minimum android level that can use Health Connect
 const val MIN_SUPPORTED_SDK = Build.VERSION_CODES.O_MR1
@@ -34,19 +42,47 @@ const val MIN_SUPPORTED_SDK = Build.VERSION_CODES.O_MR1
 class HealthConnectManager(private val context: Context) {
     private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
 
-    var availability = mutableStateOf(HealthConnectAvailability.NOT_SUPPORTED)
+    val healthConnectCompatibleApps by lazy {
+        val intent = Intent("androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE")
+
+        val packages = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.queryIntentActivities(
+                intent,
+                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+            )
+        } else {
+            context.packageManager.queryIntentActivities(
+                intent,
+                PackageManager.MATCH_ALL
+            )
+        }
+
+        packages.associate {
+            val icon = try {
+                context.packageManager.getApplicationIcon(it.activityInfo.packageName)
+            } catch(e: NotFoundException) {
+                null
+            }
+            val label = context.packageManager.getApplicationLabel(it.activityInfo.applicationInfo)
+                .toString()
+            it.activityInfo.packageName to
+                    HealthConnectAppInfo(
+                        packageName = it.activityInfo.packageName,
+                        icon = icon,
+                        appLabel = label
+                    )
+        }
+    }
+
+    var availability = mutableStateOf(SDK_UNAVAILABLE)
         private set
+
+    fun checkAvailability() {
+        availability.value = HealthConnectClient.sdkStatus(context)
+    }
 
     init {
         checkAvailability()
-    }
-
-    fun checkAvailability() {
-        availability.value = when {
-            HealthConnectClient.isAvailable(context) -> HealthConnectAvailability.INSTALLED
-            isSupported() -> HealthConnectAvailability.NOT_INSTALLED
-            else -> HealthConnectAvailability.NOT_SUPPORTED
-        }
     }
 
     /**
@@ -55,14 +91,16 @@ class HealthConnectManager(private val context: Context) {
      * permissions are already granted then there is no need to request permissions via
      * [PermissionController.createRequestPermissionResultContract].
      */
-    suspend fun hasAllPermissions(permissions: Set<HealthPermission>): Boolean {
-        return permissions == healthConnectClient.permissionController.getGrantedPermissions(
-            permissions
-        )
+    suspend fun hasAllPermissions(permissions: Set<String>): Boolean {
+        return healthConnectClient.permissionController.getGrantedPermissions().containsAll(permissions)
     }
 
-    fun requestPermissionsActivityContract(): ActivityResultContract<Set<HealthPermission>, Set<HealthPermission>> {
+    fun requestPermissionsActivityContract(): ActivityResultContract<Set<String>, Set<String>> {
         return PermissionController.createRequestPermissionResultContract()
+    }
+
+    suspend fun revokeAllPermissions(){
+        healthConnectClient.permissionController.revokeAllPermissions()
     }
 
     /**
@@ -81,41 +119,69 @@ class HealthConnectManager(private val context: Context) {
     }
 
     /**
-     * Reads users health data
+     * Writes an [ExerciseSessionRecord] to Health Connect, and additionally writes underlying data for
+     * the session too, such as [StepsRecord], [DistanceRecord] etc.
      */
-    suspend fun readHealthData(start: Instant, end: Instant): HealthData {
-        val timeRangeFilter = TimeRangeFilter.between(start, end)
-        val heartRateRequest = ReadRecordsRequest(
-            recordType = HeartRateRecord::class,
-            timeRangeFilter = timeRangeFilter
+    suspend fun writeExerciseSession(start: ZonedDateTime, end: ZonedDateTime): InsertRecordsResponse {
+        return healthConnectClient.insertRecords(
+            listOf(
+                ExerciseSessionRecord(
+                    startTime = start.toInstant(),
+                    startZoneOffset = start.offset,
+                    endTime = end.toInstant(),
+                    endZoneOffset = end.offset,
+                    exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                    title = "My Run #${Random.nextInt(0, 60)}"
+                ),
+                StepsRecord(
+                    startTime = start.toInstant(),
+                    startZoneOffset = start.offset,
+                    endTime = end.toInstant(),
+                    endZoneOffset = end.offset,
+                    count = (1000 + 1000 * Random.nextInt(3)).toLong()
+                ),
+                DistanceRecord(
+                    startTime = start.toInstant(),
+                    startZoneOffset = start.offset,
+                    endTime = end.toInstant(),
+                    endZoneOffset = end.offset,
+                    distance = Length.meters((1000 + 100 * Random.nextInt(20)).toDouble())
+                ),
+                TotalCaloriesBurnedRecord(
+                    startTime = start.toInstant(),
+                    startZoneOffset = start.offset,
+                    endTime = end.toInstant(),
+                    endZoneOffset = end.offset,
+                    energy = Energy.calories((140 + Random.nextInt(20)) * 0.01)
+                )
+            ) + buildHeartRateSeries(start, end) + buildSpeedSeries(start, end)
         )
-        val heartRateResponse = healthConnectClient.readRecords(heartRateRequest)
+    }
 
-        val bloodSugarRequest = ReadRecordsRequest(
-            recordType = BloodGlucoseRecord::class,
-            timeRangeFilter = timeRangeFilter
+    /**
+     * Deletes an [ExerciseSessionRecord] and underlying data.
+     */
+    suspend fun deleteExerciseSession(uid: String) {
+        val exerciseSession = healthConnectClient.readRecord(ExerciseSessionRecord::class, uid)
+        healthConnectClient.deleteRecords(
+            ExerciseSessionRecord::class,
+            recordIdsList = listOf(uid),
+            clientRecordIdsList = emptyList()
         )
-        val bloodSugarResponse = healthConnectClient.readRecords(bloodSugarRequest)
-
-        val bloodPressureRequest = ReadRecordsRequest(
-            recordType = BloodPressureRecord::class,
-            timeRangeFilter = timeRangeFilter
+        val timeRangeFilter = TimeRangeFilter.between(
+            exerciseSession.record.startTime,
+            exerciseSession.record.endTime
         )
-        val bloodPressureResponse = healthConnectClient.readRecords(bloodPressureRequest)
-
-        val sp02Request = ReadRecordsRequest(
-            recordType = OxygenSaturationRecord::class,
-            timeRangeFilter = timeRangeFilter
+        val rawDataTypes: Set<KClass<out Record>> = setOf(
+            HeartRateRecord::class,
+            SpeedRecord::class,
+            DistanceRecord::class,
+            StepsRecord::class,
+            TotalCaloriesBurnedRecord::class
         )
-        val spo2Response = healthConnectClient.readRecords(sp02Request)
-
-        //TODO: sleep data session. How to handle sleep session?
-        return HealthData(
-            heartRateMeasurements = heartRateResponse.records,
-            bloodSugarMeasurements = bloodSugarResponse.records,
-            bloodPressureMeasurements = bloodPressureResponse.records,
-            spo2Measurements = spo2Response.records
-        )
+        rawDataTypes.forEach { rawType ->
+            healthConnectClient.deleteRecords(rawType, timeRangeFilter)
+        }
     }
 
     /**
@@ -131,7 +197,7 @@ class HealthConnectManager(private val context: Context) {
             endTime = exerciseSession.record.endTime
         )
         val aggregateDataTypes = setOf(
-            ExerciseSessionRecord.ACTIVE_TIME_TOTAL,
+            ExerciseSessionRecord.EXERCISE_DURATION_TOTAL,
             StepsRecord.COUNT_TOTAL,
             DistanceRecord.DISTANCE_TOTAL,
             TotalCaloriesBurnedRecord.ENERGY_TOTAL,
@@ -157,7 +223,7 @@ class HealthConnectManager(private val context: Context) {
 
         return ExerciseSessionData(
             uid = uid,
-            totalActiveTime = aggregateData[ExerciseSessionRecord.ACTIVE_TIME_TOTAL],
+            totalActiveTime = aggregateData[ExerciseSessionRecord.EXERCISE_DURATION_TOTAL],
             totalSteps = aggregateData[StepsRecord.COUNT_TOTAL],
             totalDistance = aggregateData[DistanceRecord.DISTANCE_TOTAL],
             totalEnergyBurned = aggregateData[TotalCaloriesBurnedRecord.ENERGY_TOTAL],
@@ -171,6 +237,7 @@ class HealthConnectManager(private val context: Context) {
             avgSpeed = aggregateData[SpeedRecord.SPEED_AVG],
         )
     }
+
 
     /**
      * Reads sleep sessions for the previous seven days (from yesterday) to show a week's worth of
@@ -311,12 +378,94 @@ class HealthConnectManager(private val context: Context) {
         return healthConnectClient.readRecords(request).records
     }
 
-    private fun isSupported() = Build.VERSION.SDK_INT >= MIN_SUPPORTED_SDK
+    private fun buildHeartRateSeries(
+        sessionStartTime: ZonedDateTime,
+        sessionEndTime: ZonedDateTime
+    ): HeartRateRecord {
+        val samples = mutableListOf<HeartRateRecord.Sample>()
+        var time = sessionStartTime
+        while (time.isBefore(sessionEndTime)) {
+            samples.add(
+                HeartRateRecord.Sample(
+                    time = time.toInstant(),
+                    beatsPerMinute = (80 + Random.nextInt(80)).toLong()
+                )
+            )
+            time = time.plusSeconds(30)
+        }
+        return HeartRateRecord(
+            startTime = sessionStartTime.toInstant(),
+            startZoneOffset = sessionStartTime.offset,
+            endTime = sessionEndTime.toInstant(),
+            endZoneOffset = sessionEndTime.offset,
+            samples = samples
+        )
+    }
+
+    /**
+     * Reads users health data
+     */
+    suspend fun readHealthData(start: Instant, end: Instant): HealthData {
+        val timeRangeFilter = TimeRangeFilter.between(start, end)
+        val heartRateRequest = ReadRecordsRequest(
+            recordType = HeartRateRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val heartRateResponse = healthConnectClient.readRecords(heartRateRequest)
+
+        val bloodSugarRequest = ReadRecordsRequest(
+            recordType = BloodGlucoseRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val bloodSugarResponse = healthConnectClient.readRecords(bloodSugarRequest)
+
+        val bloodPressureRequest = ReadRecordsRequest(
+            recordType = BloodPressureRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val bloodPressureResponse = healthConnectClient.readRecords(bloodPressureRequest)
+
+        val sp02Request = ReadRecordsRequest(
+            recordType = OxygenSaturationRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val spo2Response = healthConnectClient.readRecords(sp02Request)
+
+        return HealthData(
+            heartRateMeasurements = heartRateResponse.records,
+            bloodSugarMeasurements = bloodSugarResponse.records,
+            bloodPressureMeasurements = bloodPressureResponse.records,
+            spo2Measurements = spo2Response.records
+        )
+    }
+
+    private fun buildSpeedSeries(
+        sessionStartTime: ZonedDateTime,
+        sessionEndTime: ZonedDateTime
+    ) = SpeedRecord(
+        startTime = sessionStartTime.toInstant(),
+        startZoneOffset = sessionStartTime.offset,
+        endTime = sessionEndTime.toInstant(),
+        endZoneOffset = sessionEndTime.offset,
+        samples = listOf(
+            SpeedRecord.Sample(
+                time = sessionStartTime.toInstant(),
+                speed = Velocity.metersPerSecond(2.5)
+            ),
+            SpeedRecord.Sample(
+                time = sessionStartTime.toInstant().plus(5, ChronoUnit.MINUTES),
+                speed = Velocity.metersPerSecond(2.7)
+            ),
+            SpeedRecord.Sample(
+                time = sessionStartTime.toInstant().plus(10, ChronoUnit.MINUTES),
+                speed = Velocity.metersPerSecond(2.9)
+            )
+        )
+    )
 
     // Represents the two types of messages that can be sent in a Changes flow.
     sealed class ChangesMessage {
         data class NoMoreChanges(val nextChangesToken: String) : ChangesMessage()
         data class ChangeList(val changes: List<Change>) : ChangesMessage()
     }
-
 }

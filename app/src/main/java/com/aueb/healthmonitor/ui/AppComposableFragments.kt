@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.health.connect.client.HealthConnectClient
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -31,7 +32,8 @@ fun AppScreens(
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
         val availability by healthConnectManager.availability
         composable(Screen.HomeScreen.route){
-            HomeScreen()
+            HomeScreen(healthConnectAvailability = HealthConnectClient.SDK_AVAILABLE,
+                onResumeAvailabilityCheck = {})
         }
         composable(Screen.PatientScreen.route){
             PatienScreen(navController, context, patientManager)
