@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
+import com.aueb.healthmonitor.healthconnect.HealthData
 import com.aueb.healthmonitor.patient.PatientManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,13 +34,23 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
     val permissionsGranted = mutableStateOf(false)
 
     val permissionsLauncher = healthConnectManager.requestPermissionsActivityContract()
-//    init {
-//        asd()
-//    }
 
-    //val healthData
-    fun asd(){
-        val startDate = LocalDate.of(2023, Month.APRIL, 10)
+    val healthData = mutableStateOf(HealthData())
+
+    init {
+        checkPermissions()
+    }
+
+    fun checkPermissions(){
+        viewModelScope.launch(Dispatchers.Main) {
+            tryWithPermissionsCheck {
+
+            }
+        }
+    }
+
+    fun initialize(){
+        val startDate = LocalDate.of(2023, Month.APRIL, 9)
         val start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant()
         val endDate = LocalDate.of(2023, Month.APRIL, 11)
         val end = endDate.atStartOfDay(ZoneOffset.UTC).toInstant()
@@ -47,9 +58,8 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
             tryWithPermissionsCheck {
                 val data = healthConnectManager.readHealthData(start, end)
                 withContext(Dispatchers.Main){
-
+                    healthData.value = data
                 }
-                val xx= "test"
             }
         }
     }

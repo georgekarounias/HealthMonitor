@@ -407,41 +407,37 @@ class HealthConnectManager(private val context: Context) {
      * Reads users health data
      */
     suspend fun readHealthData(start: Instant, end: Instant): HealthData {
-        try {
-            val timeRangeFilter = TimeRangeFilter.between(start, end)
-            val heartRateRequest = ReadRecordsRequest(
-                recordType = HeartRateRecord::class,
-                timeRangeFilter = timeRangeFilter
-            )
-            val heartRateResponse = healthConnectClient.readRecords(heartRateRequest)
+        val timeRangeFilter = TimeRangeFilter.between(start, end)
+        val heartRateRequest = ReadRecordsRequest(
+            recordType = HeartRateRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val heartRateResponse = healthConnectClient.readRecords(heartRateRequest)
 
-            val bloodSugarRequest = ReadRecordsRequest(
-                recordType = BloodGlucoseRecord::class,
-                timeRangeFilter = timeRangeFilter
-            )
-            val bloodSugarResponse = healthConnectClient.readRecords(bloodSugarRequest)
+        val bloodSugarRequest = ReadRecordsRequest(
+            recordType = BloodGlucoseRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val bloodSugarResponse = healthConnectClient.readRecords(bloodSugarRequest)
 
-            val bloodPressureRequest = ReadRecordsRequest(
-                recordType = BloodPressureRecord::class,
-                timeRangeFilter = timeRangeFilter
-            )
-            val bloodPressureResponse = healthConnectClient.readRecords(bloodPressureRequest)
+        val bloodPressureRequest = ReadRecordsRequest(
+            recordType = BloodPressureRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val bloodPressureResponse = healthConnectClient.readRecords(bloodPressureRequest)
 
-            val sp02Request = ReadRecordsRequest(
-                recordType = OxygenSaturationRecord::class,
-                timeRangeFilter = timeRangeFilter
-            )
-            val spo2Response = healthConnectClient.readRecords(sp02Request)
+        val sp02Request = ReadRecordsRequest(
+            recordType = OxygenSaturationRecord::class,
+            timeRangeFilter = timeRangeFilter
+        )
+        val spo2Response = healthConnectClient.readRecords(sp02Request)
 
-            return HealthData(
-                heartRateMeasurements = heartRateResponse.records,
-                bloodSugarMeasurements = bloodSugarResponse.records,
-                bloodPressureMeasurements = bloodPressureResponse.records,
-                spo2Measurements = spo2Response.records
-            )
-        }catch (e:Exception){
-            return  HealthData()
-        }
+        return HealthData(
+            heartRateMeasurements = heartRateResponse.records,
+            bloodSugarMeasurements = bloodSugarResponse.records,
+            bloodPressureMeasurements = bloodPressureResponse.records,
+            spo2Measurements = spo2Response.records
+        )
     }
 
     private fun buildSpeedSeries(
