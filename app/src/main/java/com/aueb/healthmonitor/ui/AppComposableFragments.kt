@@ -43,7 +43,7 @@ fun AppScreens(
             PatienScreen(navController, context, patientManager)
         }
         composable(Screen.VitalsScreen.route){
-            VitalsScreen()
+            VitalsScreen(navController, context, patientManager, healthConnectManager)
         }
         composable(Screen.InfoScreen.route){
             InfoScreen()
