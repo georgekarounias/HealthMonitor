@@ -29,8 +29,10 @@ import java.util.*
 
 
 @Composable
-fun DatePicker(onDateSelected: (Date) -> Unit){
-
+fun DatePicker(
+    label:String = stringResource(id = R.string.datePicker_select_date_default),
+    onDateSelected: (Date) -> Unit
+){
     val mContext = LocalContext.current
 
     val mYear: Int
@@ -84,7 +86,7 @@ fun DatePicker(onDateSelected: (Date) -> Unit){
                     .padding(2.dp)
             )
             Text(
-                text = stringResource(id = R.string.date_picker_selected_date_prefix) + ": ${mDate.value}",
+                text = label + ": ${mDate.value}",
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(8.dp)

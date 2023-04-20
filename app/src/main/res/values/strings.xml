@@ -61,4 +61,6 @@
         Health Connect.
     </string>
 
+
+    <string name="datePicker_select_date_default">Select date</string>
 </resources>

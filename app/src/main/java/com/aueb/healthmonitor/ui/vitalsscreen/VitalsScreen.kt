@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -20,6 +21,8 @@ import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.recordConverters.SetDataTableOptions
 import com.aueb.healthmonitor.ui.components.datatable.DataTable
+import com.aueb.healthmonitor.ui.components.datepicker.DatePicker
+import com.aueb.healthmonitor.ui.components.loader.LoadingDialog
 
 @Composable
 fun VitalsScreen(navController: NavController, context: Context, patientManager: PatientManager, healthConnectManager: HealthConnectManager){
@@ -29,7 +32,7 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
     val permissionsGranted by viewModel.permissionsGranted
     val permissions = viewModel.permissions
     val healthData = viewModel.healthData
-    val onPermissionsResult = {viewModel.initialize()}
+    val onPermissionsResult = {viewModel.loadHealthData()}
     val permissionsLauncher =
         rememberLauncherForActivityResult(viewModel.permissionsLauncher) {
             onPermissionsResult()}
@@ -48,6 +51,15 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
             }
         }else{
             item{
+                DatePicker(
+                    onDateSelected = {
+                    viewModel.updateSelectDay(it)
+                })
+                LoadingDialog(viewModel.isLoading, "Loading Data", "Fetching Data from Health Connect")
+                if(viewModel.isLoading){
+                   return@item
+                }
+                Spacer(modifier = Modifier.height(10.dp))
                 val options = SetDataTableOptions(healthData.value.spo2Measurements)
                 DataTable(options)
             }

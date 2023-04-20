@@ -2,7 +2,9 @@ package com.aueb.healthmonitor.ui.vitalsscreen
 
 import android.content.Context
 import android.os.RemoteException
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.BloodGlucoseRecord
 import androidx.health.connect.client.records.BloodPressureRecord
@@ -21,6 +23,8 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.Month
 import java.time.ZoneOffset
+import java.util.Calendar
+import java.util.Date
 import java.util.UUID
 
 class VitalsViewModel(private val context: Context, private val patientManager: PatientManager, private val healthConnectManager: HealthConnectManager): ViewModel(){
@@ -37,9 +41,12 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
 
     val healthData = mutableStateOf(HealthData())
 
+    val selectedDay = mutableStateOf(Date())
+    var isLoading: Boolean by mutableStateOf(false)
+
     init {
         checkPermissions()
-        initialize()
+        loadHealthData()
     }
 
     fun checkPermissions(){
@@ -50,20 +57,30 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
         }
     }
 
-    fun initialize(){
-        val startDate = LocalDate.of(2023, Month.APRIL, 9)
+    fun loadHealthData(){
+        val calendar = Calendar.getInstance()
+        calendar.time = selectedDay.value
+        val startDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))
         val start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant()
-        val endDate = LocalDate.of(2023, Month.APRIL, 11)
+        val endDate = startDate.plusDays(1)
         val end = endDate.atStartOfDay(ZoneOffset.UTC).toInstant()
+        isLoading = true
         viewModelScope.launch(Dispatchers.IO) {
             tryWithPermissionsCheck {
                 val data = healthConnectManager.readHealthData(start, end)
                 withContext(Dispatchers.Main){
                     healthData.value = data
+                    isLoading = false
                 }
             }
         }
     }
+
+    fun updateSelectDay(selectedDate: Date){
+        selectedDay.value = selectedDate
+        loadHealthData()
+    }
+
     private suspend fun tryWithPermissionsCheck(block: suspend () -> Unit) {
         permissionsGranted.value = healthConnectManager.hasAllPermissions(permissions)
         if (permissionsGranted.value) {

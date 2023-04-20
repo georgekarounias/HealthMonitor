@@ -94,7 +94,9 @@ fun PatienScreen(navController: NavController, context: Context, patientManager:
                     modifier = Modifier.fillMaxWidth(0.8f)
                 )
             }else {
-                DatePicker(onDateSelected = {
+                DatePicker(
+                    label = stringResource(id = R.string.date_picker_selected_date_prefix),
+                    onDateSelected = {
                     viewModel.UpdateBirthDate(it)
                 })
             }
