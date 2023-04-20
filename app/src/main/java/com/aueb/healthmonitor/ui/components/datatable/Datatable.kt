@@ -27,7 +27,6 @@ fun DataTable(
 ) {
     val tableBackgroundColor = Color.White
     val headerTextColor = Color.Black
-    val rowTextColor = Color.DarkGray
 
     if(options.records.isEmpty()){
         MessageBox(message = "The are 0 records for this period.")
@@ -46,10 +45,10 @@ fun DataTable(
         // Header row
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = options.title,
+                text = options.title + "(${options.records.size})",
                 fontWeight = FontWeight.Bold,
                 color = headerTextColor,
                 fontSize = 18.sp

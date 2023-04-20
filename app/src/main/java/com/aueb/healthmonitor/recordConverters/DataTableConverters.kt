@@ -10,6 +10,7 @@ import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
 import com.aueb.healthmonitor.models.DataTableOptions
 import com.aueb.healthmonitor.ui.components.datatable.DataTableItem
+import com.aueb.healthmonitor.utils.displayIsoDateString
 
 fun<T> SetDataTableOptions(records: List<T>?): DataTableOptions{
     var options = DataTableOptions()
@@ -58,7 +59,7 @@ private fun heartRateDTConverter(records: List<HeartRateRecord>): List<DataTable
             val dtRecord = DataTableItem(
                 type = "Heart Rate",
                 value = sample.beatsPerMinute.toString(),
-                date = sample.time.toString()
+                date = displayIsoDateString(sample.time.toString())
             )
             dtRecords.add(dtRecord)
         }
@@ -72,7 +73,7 @@ private fun oxygenSaturationDTConverter(records: List<OxygenSaturationRecord>): 
         val dtRecord = DataTableItem(
             type = "O2sp",
             value = record.percentage.toString(),
-            date = record.time.toString()
+            date = displayIsoDateString(record.time.toString())
         )
         dtRecords.add(dtRecord)
     }
@@ -85,7 +86,7 @@ private fun bloodGlucoseDTConverter(records: List<BloodGlucoseRecord>): List<Dat
         val dtRecord = DataTableItem(
             type = "Blood Glucose",
             value = record.level.toString(),
-            date = record.time.toString()
+            date = displayIsoDateString(record.time.toString())
         )
         dtRecords.add(dtRecord)
     }
@@ -98,7 +99,7 @@ private fun bloodPressureDTConverter(records: List<BloodPressureRecord>): List<D
         val dtRecord = DataTableItem(
             type = "Blood Glucose",
             value = "DIA: "+ record.diastolic.toString()+" | "+"SYS: "+ record.systolic.toString(),
-            date = record.time.toString()
+            date = displayIsoDateString(record.time.toString())
         )
         dtRecords.add(dtRecord)
     }

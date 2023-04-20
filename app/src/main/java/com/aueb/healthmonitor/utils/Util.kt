@@ -119,6 +119,18 @@ fun isoStringToDate(dateStr: String): Date{
         return Date()
     }
 }
+
+fun displayIsoDateString(isoDateString: String): String{
+    try {
+        val inputFormatter = DateTimeFormatter.ISO_DATE_TIME
+        val outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+        val localDateTime = LocalDateTime.parse(isoDateString, inputFormatter).atOffset(ZoneOffset.UTC)
+        val outputDateStr = outputFormatter.format(localDateTime)
+        return outputDateStr
+    }catch (e:Exception){
+        return isoDateString
+    }
+}
 //fun <T>convertToJsonString(data: T):String{
 //    val gsonPretty = GsonBuilder().setPrettyPrinting().create()
 //    val jsonString: String = gsonPretty.toJson(data)

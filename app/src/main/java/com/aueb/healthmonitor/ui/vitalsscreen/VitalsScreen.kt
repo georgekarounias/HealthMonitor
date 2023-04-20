@@ -49,8 +49,6 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
         }else{
             item{
                 val options = SetDataTableOptions(healthData.value.spo2Measurements)
-                Text(options.records.size.toString())
-                Spacer(modifier = Modifier.height(15.dp))
                 DataTable(options)
             }
         }
