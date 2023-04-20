@@ -39,6 +39,7 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
 
     init {
         checkPermissions()
+        initialize()
     }
 
     fun checkPermissions(){
