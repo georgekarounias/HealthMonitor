@@ -13,9 +13,11 @@ import androidx.health.connect.client.records.OxygenSaturationRecord
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.aueb.healthmonitor.enums.HealthRecordType
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.healthconnect.HealthData
 import com.aueb.healthmonitor.patient.PatientManager
+import com.aueb.healthmonitor.ui.vitalsscreen.menu.HealthRecordMenuItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,6 +46,8 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
     val selectedDay = mutableStateOf(Date())
     var isLoading: Boolean by mutableStateOf(false)
 
+    var selectedMenuItem = mutableStateOf(HealthRecordMenuItem())
+
     init {
         checkPermissions()
         loadHealthData()
@@ -58,12 +62,16 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
     }
 
     fun loadHealthData(){
+        if(selectedDay.value == null){
+            return
+        }
         val calendar = Calendar.getInstance()
         calendar.time = selectedDay.value
         val startDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))
         val start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant()
         val endDate = startDate.plusDays(1)
         val end = endDate.atStartOfDay(ZoneOffset.UTC).toInstant()
+
         isLoading = true
         viewModelScope.launch(Dispatchers.IO) {
             tryWithPermissionsCheck {
@@ -81,6 +89,9 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
         loadHealthData()
     }
 
+    fun updateHealthRecordType(item: HealthRecordMenuItem){
+        selectedMenuItem.value = item
+    }
     private suspend fun tryWithPermissionsCheck(block: suspend () -> Unit) {
         permissionsGranted.value = healthConnectManager.hasAllPermissions(permissions)
         if (permissionsGranted.value) {

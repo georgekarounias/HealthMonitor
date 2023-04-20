@@ -17,12 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.aueb.healthmonitor.enums.HealthRecordType
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.recordConverters.SetDataTableOptions
 import com.aueb.healthmonitor.ui.components.datatable.DataTable
 import com.aueb.healthmonitor.ui.components.datepicker.DatePicker
 import com.aueb.healthmonitor.ui.components.loader.LoadingDialog
+import com.aueb.healthmonitor.ui.vitalsscreen.menu.HealthRecordMenu
+import com.aueb.healthmonitor.ui.vitalsscreen.menu.HealthRecordMenuItem
 
 @Composable
 fun VitalsScreen(navController: NavController, context: Context, patientManager: PatientManager, healthConnectManager: HealthConnectManager){
@@ -46,11 +49,40 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
                 Button(
                     onClick = { permissionsLauncher.launch(permissions) }
                 ) {
-                    Text(text = "Get Perms")
+                    Text(text = "Get Permissions")
                 }
             }
         }else{
             item{
+                HealthRecordMenu(
+                    items = listOf(
+                        HealthRecordMenuItem(
+                            id = 1,
+                            type = HealthRecordType.HeartRate,
+                            name = "Heart Rate"
+                        ),
+                        HealthRecordMenuItem(
+                            id = 2,
+                            type = HealthRecordType.OxygenSaturation,
+                            name = "Oxygen Saturation"
+                        ),
+                        HealthRecordMenuItem(
+                            id = 3,
+                            type = HealthRecordType.BloodGlucose,
+                            name = "Blood Glucose"
+                        ),
+                        HealthRecordMenuItem(
+                            id = 4,
+                            type = HealthRecordType.BloodPressure,
+                            name = "Blood Pressure"
+                        )
+                    ),
+                    onSelected = {
+                        viewModel.updateHealthRecordType(it)
+                    },
+                    selected = viewModel.selectedMenuItem.value
+                )
+                Spacer(modifier = Modifier.height(10.dp))
                 DatePicker(
                     onDateSelected = {
                     viewModel.updateSelectDay(it)
@@ -60,8 +92,31 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
                    return@item
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                val options = SetDataTableOptions(healthData.value.spo2Measurements)
-                DataTable(options)
+                when(viewModel.selectedMenuItem.value.type){
+                    HealthRecordType.HeartRate ->{
+                        val data = healthData.value.heartRateMeasurements
+                        val options = SetDataTableOptions(data)
+                        DataTable(options)
+                    }
+                    HealthRecordType.OxygenSaturation ->{
+                        val data = healthData.value.spo2Measurements
+                        val options = SetDataTableOptions(data)
+                        DataTable(options)
+                    }
+                    HealthRecordType.BloodPressure ->{
+                        val data = healthData.value.bloodPressureMeasurements
+                        val options = SetDataTableOptions(data)
+                        DataTable(options)
+                    }
+                    HealthRecordType.BloodGlucose ->{
+                        val data = healthData.value.bloodSugarMeasurements
+                        val options = SetDataTableOptions(data)
+                        DataTable(options)
+                    }
+                    else -> {
+                        return@item
+                    }
+                }
             }
         }
 

@@ -41,7 +41,8 @@ fun DataTableItemView(icon: ImageVector, value: String, date: String) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colors.primary
             )
-            Spacer(modifier = Modifier.width(14.dp))
+        }
+        Row{
             Icon(
                 imageVector = Icons.Default.PunchClock,
                 contentDescription = null,

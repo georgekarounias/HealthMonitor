@@ -4,5 +4,6 @@ enum class HealthRecordType {
     HeartRate,
     OxygenSaturation,
     BloodGlucose,
-    BloodPressure
+    BloodPressure,
+    None
 }
