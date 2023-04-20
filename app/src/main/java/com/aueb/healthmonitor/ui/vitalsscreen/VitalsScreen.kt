@@ -94,24 +94,16 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
                 Spacer(modifier = Modifier.height(10.dp))
                 when(viewModel.selectedMenuItem.value.type){
                     HealthRecordType.HeartRate ->{
-                        val data = healthData.value.heartRateMeasurements
-                        val options = SetDataTableOptions(data)
-                        DataTable(options)
+                        VitalsFragment(data = healthData.value.heartRateMeasurements, onSave = {viewModel.onSaveHR(healthData.value.heartRateMeasurements)})
                     }
                     HealthRecordType.OxygenSaturation ->{
-                        val data = healthData.value.spo2Measurements
-                        val options = SetDataTableOptions(data)
-                        DataTable(options)
+                        VitalsFragment(data = healthData.value.spo2Measurements, onSave = {viewModel.onSaveO2sp(healthData.value.spo2Measurements)})
                     }
                     HealthRecordType.BloodPressure ->{
-                        val data = healthData.value.bloodPressureMeasurements
-                        val options = SetDataTableOptions(data)
-                        DataTable(options)
+                        VitalsFragment(data = healthData.value.bloodPressureMeasurements, onSave = {viewModel.onSaveBP(healthData.value.bloodPressureMeasurements)})
                     }
                     HealthRecordType.BloodGlucose ->{
-                        val data = healthData.value.bloodSugarMeasurements
-                        val options = SetDataTableOptions(data)
-                        DataTable(options)
+                        VitalsFragment(data = healthData.value.bloodSugarMeasurements, onSave = {viewModel.onSaveBG(healthData.value.bloodSugarMeasurements)})
                     }
                     else -> {
                         return@item

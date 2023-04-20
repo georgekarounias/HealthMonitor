@@ -63,4 +63,5 @@
 
 
     <string name="datePicker_select_date_default">Select date</string>
+    <string name="vitals_screen_save_records">Save Records</string>
 </resources>

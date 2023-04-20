@@ -92,6 +92,21 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
     fun updateHealthRecordType(item: HealthRecordMenuItem){
         selectedMenuItem.value = item
     }
+
+    fun onSaveHR(data: List<HeartRateRecord>){
+        //TODO: maybe create a hash for the (day + type + patient + records) and create an id
+        //TODO: check if id already exists. if true we know that this patient for this day has already upload the type and the exact records (so workflow ends).
+        //TODO: Else -> Convert [HRConverted is ready and untested] and submit records to hapi fhir
+    }
+    fun onSaveO2sp(data: List<OxygenSaturationRecord>){
+
+    }
+    fun onSaveBP(data: List<BloodPressureRecord>){
+
+    }
+    fun onSaveBG(data: List<BloodGlucoseRecord>){
+
+    }
     private suspend fun tryWithPermissionsCheck(block: suspend () -> Unit) {
         permissionsGranted.value = healthConnectManager.hasAllPermissions(permissions)
         if (permissionsGranted.value) {

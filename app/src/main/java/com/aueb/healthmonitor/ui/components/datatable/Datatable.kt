@@ -54,7 +54,7 @@ fun DataTable(
                 fontSize = 18.sp
             )
         }
-        Box(modifier = Modifier.height(200.dp)) {
+        Box(modifier = Modifier.height(300.dp)) {
             LazyColumn {
                 items(rowCount) { index ->
                     val currentRow = options.records[index]
