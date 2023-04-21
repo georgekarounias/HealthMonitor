@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -20,8 +19,6 @@ import androidx.navigation.NavController
 import com.aueb.healthmonitor.enums.HealthRecordType
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.patient.PatientManager
-import com.aueb.healthmonitor.recordConverters.SetDataTableOptions
-import com.aueb.healthmonitor.ui.components.datatable.DataTable
 import com.aueb.healthmonitor.ui.components.datepicker.DatePicker
 import com.aueb.healthmonitor.ui.components.loader.LoadingDialog
 import com.aueb.healthmonitor.ui.vitalsscreen.menu.HealthRecordMenu
