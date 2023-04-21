@@ -32,6 +32,7 @@ class PatientViewModel(private val context: Context, private val patientManager:
     var gender: String by  mutableStateOf(getGernderListFirstCode())
     var birthdate: Date by  mutableStateOf(Date())
     var birthdateStr: String by  mutableStateOf("")
+    var smartwachmodel: String by  mutableStateOf("")
 
     init{
         initPatient()
@@ -52,6 +53,11 @@ class PatientViewModel(private val context: Context, private val patientManager:
     fun UpdateBirthDate(value: Date){
         birthdate = value
         birthdateStr = try{dateToIsoString(birthdate).trim()}catch (e: Exception){""}
+        isFormValidated = isFormValid()
+    }
+
+    fun UpdateSmartwatchModel(value: String){
+        smartwachmodel = value.trim()
         isFormValidated = isFormValid()
     }
 
@@ -88,10 +94,11 @@ class PatientViewModel(private val context: Context, private val patientManager:
     }
 
     private fun isFormValid(): Boolean{
-        if(name == "" ||
-                surname == "" ||
-                gender == "" ||
-                birthdateStr == ""){
+        if(name.isNullOrEmpty() ||
+                surname.isNullOrEmpty()||
+                gender.isNullOrEmpty()||
+                birthdateStr.isNullOrEmpty() ||
+                smartwachmodel.isNullOrEmpty()){
             return false
         }
         if(readOnly){

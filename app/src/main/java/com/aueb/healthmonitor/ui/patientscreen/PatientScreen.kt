@@ -100,15 +100,15 @@ fun PatienScreen(navController: NavController, context: Context, patientManager:
                     viewModel.UpdateBirthDate(it)
                 })
             }
+            Spacer(modifier = Modifier.height(15.dp))
 
-            if(viewModel.readOnly){
-                Spacer(modifier = Modifier.height(15.dp))
-                //TODO : add component to show devices
-                Text("TODO get list of devices")
-                Spacer(modifier = Modifier.height(15.dp))
-                //TODO : fix + button to add show form for devices
-                Text("TODO add dynamic list of devices")
-            }
+            CustomTextField(
+                label = stringResource(id = R.string.patient_screen_form_smart_watch_model),
+                value = viewModel.smartwachmodel,
+                onValueChange = { viewModel.UpdateSmartwatchModel(it) },
+                readOnly = viewModel.readOnly,
+                modifier = Modifier.fillMaxWidth(0.8f)
+            )
         }
 
         if(viewModel.isFormValidated){
