@@ -27,6 +27,7 @@
     <string name="patient_screen_form_smart_watch_manufacturer">Smartwatch Manufacturer</string>
     <string name="patient_screen_form_smart_watch_model">Smartwatch Model</string>
     <string name="patient_screen_form_birthdate">Birthdate</string>
+    <string name="patient_screen_form_gender">Gender</string>
     <string name="patient_screen_create_btn">Save</string>
 
     <string name="settings_screen_header">Settings</string>
@@ -66,4 +67,8 @@
 
     <string name="datePicker_select_date_default">Select date</string>
     <string name="vitals_screen_save_records">Save Records</string>
+    <string name="vitals_screen_get_permissions">Get Permissions</string>
+
+    <string name="loader_resource_title">Loading Action</string>
+    <string name="loader_resource_text">This action may take some time...</string>
 </resources>

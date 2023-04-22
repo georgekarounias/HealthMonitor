@@ -4,23 +4,28 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.fhirclient.FhirServices
 import com.aueb.healthmonitor.patient.PatientManager
+import com.aueb.healthmonitor.ui.Screen
 import com.aueb.healthmonitor.ui.getGenderByCode
 import com.aueb.healthmonitor.ui.getGernderListFirstCode
 import com.aueb.healthmonitor.utils.dateToIsoString
 import com.aueb.healthmonitor.utils.toastMessage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.hl7.fhir.r4.model.Patient
 import java.util.Date
 
 
-class PatientViewModel(private val context: Context, private val patientManager: PatientManager): ViewModel(){
+class PatientViewModel(private val context: Context, private val patientManager: PatientManager, private val navController: NavController): ViewModel(){
 
     var isFormValidated: Boolean by mutableStateOf(false)
     var isLoading: Boolean by mutableStateOf(false)
@@ -34,6 +39,7 @@ class PatientViewModel(private val context: Context, private val patientManager:
     var birthdateStr: String by  mutableStateOf("")
     var smartwachmodel: String by  mutableStateOf("")
     var smartwachManufacturer: String by  mutableStateOf("")
+    var isFhirRequestPatientCreated: Boolean by mutableStateOf(false)
 
     init{
         initPatient()
@@ -75,7 +81,7 @@ class PatientViewModel(private val context: Context, private val patientManager:
     private fun initPatient(){
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main){
-                setLoaderInfo(true, "Loading_res", "Please wait..._res")
+                setLoaderInfo(true, context.resources.getString(R.string.loader_resource_title), context.resources.getString(R.string.loader_resource_text))
             }
             val patientId = patientManager.GetId()
             if(patientId!=null) {
@@ -120,20 +126,41 @@ class PatientViewModel(private val context: Context, private val patientManager:
     fun savePatient(){
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main){
-                setLoaderInfo(true, "Loading_res", "Please wait..._res")
+                setLoaderInfo(true, context.resources.getString(R.string.loader_resource_title), context.resources.getString(R.string.loader_resource_text))
             }
             val fhirGender = getGenderByCode(gender)
-            FhirServices.createPatient(patientManager.GetId() ?: "",
+            async {
+                isFhirRequestPatientCreated = FhirServices.createPatient(patientManager.GetId() ?: "",
                 name,
                 surname,
                 fhirGender,
                 birthdate,
                 context,
                 patientManager
-            )
-            FhirServices.saveDeviceInfo(smartwachManufacturer, smartwachmodel, patientManager.GetId() ?: "", context)
+            )}.await()
+            async {
+                FhirServices.saveDeviceInfo(
+                    smartwachManufacturer,
+                    smartwachmodel,
+                    patientManager.GetId() ?: "",
+                    context
+                )
+            }.await()
             withContext(Dispatchers.Main){
                 setLoaderInfo(false, "", "")
+                if(isFhirRequestPatientCreated){
+                    //TODO: needs some fixing here (not a priority for now)
+//                    navController.navigate(Screen.HomeScreen.route){
+//                        navController.graph.startDestinationRoute?.let { route ->
+//                            popUpTo(route) {
+//                                saveState = true
+//                            }
+//                        }
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
+                    readOnly = true
+                }
             }
         }
 
@@ -141,11 +168,11 @@ class PatientViewModel(private val context: Context, private val patientManager:
 
 }
 
-class PatientViewModelFactory(private val context: Context, private val patientManager: PatientManager) : ViewModelProvider.Factory {
+class PatientViewModelFactory(private val context: Context, private val patientManager: PatientManager, private val navController: NavController) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PatientViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return PatientViewModel(context, patientManager) as T
+            return PatientViewModel(context, patientManager, navController) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

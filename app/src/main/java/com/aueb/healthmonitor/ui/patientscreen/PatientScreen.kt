@@ -19,6 +19,8 @@ import com.aueb.healthmonitor.ui.components.datepicker.DatePicker
 import com.aueb.healthmonitor.ui.getGenderOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.ui.components.headertitle.Header
 import com.aueb.healthmonitor.ui.components.loader.LoadingDialog
@@ -27,7 +29,7 @@ import com.aueb.healthmonitor.ui.components.textfield.CustomTextField
 @Composable
 fun PatienScreen(navController: NavController, context: Context, patientManager: PatientManager){
     val viewModel: PatientViewModel = viewModel(
-        factory = PatientViewModelFactory(context, patientManager)
+        factory = PatientViewModelFactory(context, patientManager, navController)
     )
 
     LaunchedEffect(viewModel) {
@@ -71,16 +73,26 @@ fun PatienScreen(navController: NavController, context: Context, patientManager:
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Box(modifier = Modifier.fillMaxWidth(0.8f)) {
-                DropDownMenu(
-                    items = genderOptions,
-                    label = "Gender",
-                    selectedItem = genderOptions.find { it.code == viewModel.gender }
-                        ?: genderOptions.first(),
-                    onSelected = {
-                        viewModel.UpdateGender(it.code)
-                    }
+            if(viewModel.readOnly){
+                CustomTextField(
+                    label = stringResource(id = R.string.patient_screen_form_gender),
+                    value = viewModel.gender,
+                    onValueChange = {  },
+                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth(0.8f)
                 )
+            }else {
+                Box(modifier = Modifier.fillMaxWidth(0.8f)) {
+                    DropDownMenu(
+                        items = genderOptions,
+                        label = stringResource(id = R.string.patient_screen_form_gender),
+                        selectedItem = genderOptions.find { it.code == viewModel.gender }
+                            ?: genderOptions.first(),
+                        onSelected = {
+                            viewModel.UpdateGender(it.code)
+                        }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(15.dp))

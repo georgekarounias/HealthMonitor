@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.enums.HealthRecordType
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.patient.PatientManager
@@ -46,7 +48,7 @@ fun VitalsScreen(navController: NavController, context: Context, patientManager:
                 Button(
                     onClick = { permissionsLauncher.launch(permissions) }
                 ) {
-                    Text(text = "Get Permissions")
+                    Text(text = stringResource(id = R.string.vitals_screen_get_permissions))
                 }
             }
         }else{

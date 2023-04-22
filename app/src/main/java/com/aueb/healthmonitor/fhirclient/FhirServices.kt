@@ -2,7 +2,9 @@ package com.aueb.healthmonitor.fhirclient
 
 import android.content.Context
 import androidx.health.connect.client.records.HeartRateRecord
+import ca.uhn.fhir.model.api.Include
 import ca.uhn.fhir.rest.api.MethodOutcome
+import ca.uhn.fhir.rest.gclient.StringClientParam
 import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.patient.PatientManager
 import com.aueb.healthmonitor.recordConverters.HRRecordConverter
@@ -117,14 +119,19 @@ class FhirServices {
             }
             val client = RestClient.getClient()
             try {
-                // search for the patient's devices
+                val patientId = (existingPatient as Patient).identifier.firstOrNull()!!.value
+                //Get all devices
+                //add filter for patient devices //refactor needs to be done to take from http only patients devices
                 val deviceResults: Bundle = client!!
                     .search<IBaseBundle>()
                     .forResource(Device::class.java)
-                    .where(Device.PATIENT.hasId(existingPatient.idElement.value))
                     .returnBundle(Bundle::class.java)
                     .execute()
-                return deviceResults.entry.asSequence().map{x->x.resource as Device}.toList()
+                val devices = deviceResults.entry.asSequence().map{x->x.resource as Device}
+                val patientResource = existingPatient as Resource
+                val patientIntId = patientResource.idElement.idPart
+                val patientDevices = devices.filter { it.patient.reference == "#$patientIntId" }.toList()
+                return patientDevices
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_device_not_found))
                 return listOf()
