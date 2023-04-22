@@ -1,13 +1,19 @@
 package com.aueb.healthmonitor.fhirclient
 
 import android.content.Context
+import androidx.health.connect.client.records.BloodGlucoseRecord
+import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.OxygenSaturationRecord
 import ca.uhn.fhir.model.api.Include
 import ca.uhn.fhir.rest.api.MethodOutcome
 import ca.uhn.fhir.rest.gclient.StringClientParam
 import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.patient.PatientManager
+import com.aueb.healthmonitor.recordConverters.BGRecordConverter
+import com.aueb.healthmonitor.recordConverters.BPRecordConverter
 import com.aueb.healthmonitor.recordConverters.HRRecordConverter
+import com.aueb.healthmonitor.recordConverters.O2spRecordConverter
 import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.PatientIdSystemCode
 import com.aueb.healthmonitor.utils.hashString
 import com.aueb.healthmonitor.utils.toastMessage
@@ -69,9 +75,42 @@ class FhirServices {
             }
         }
 
-        fun createHeartRateObservation(records: List<HeartRateRecord>, patientId: String, ctx: Context?): Bundle? {
+        fun createHeartRateObservations(records: List<HeartRateRecord>, patientId: String, ctx: Context?): Bundle? {
             val client = RestClient.getClient()
             val bundle = HRRecordConverter.createHRBundle(records, patientId)
+            try {
+                return client?.transaction()?.withBundle(bundle)?.execute()
+            }catch (e: Exception){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
+                return null
+            }
+        }
+
+        fun createBPObservations(records: List<BloodPressureRecord>, patientId: String, ctx: Context?): Bundle? {
+            val client = RestClient.getClient()
+            val bundle = BPRecordConverter.createBPBundle(records, patientId)
+            try {
+                return client?.transaction()?.withBundle(bundle)?.execute()
+            }catch (e: Exception){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
+                return null
+            }
+        }
+
+        fun createBGObservations(records: List<BloodGlucoseRecord>, patientId: String, ctx: Context?): Bundle? {
+            val client = RestClient.getClient()
+            val bundle = BGRecordConverter.createBGBundle(records, patientId)
+            try {
+                return client?.transaction()?.withBundle(bundle)?.execute()
+            }catch (e: Exception){
+                toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
+                return null
+            }
+        }
+
+        fun createO2spObservations(records: List<OxygenSaturationRecord>, patientId: String, ctx: Context?): Bundle? {
+            val client = RestClient.getClient()
+            val bundle = O2spRecordConverter.createO2spBundle(records, patientId)
             try {
                 return client?.transaction()?.withBundle(bundle)?.execute()
             }catch (e: Exception){

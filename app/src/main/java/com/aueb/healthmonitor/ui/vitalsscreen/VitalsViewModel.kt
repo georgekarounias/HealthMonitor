@@ -13,12 +13,16 @@ import androidx.health.connect.client.records.OxygenSaturationRecord
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.aueb.healthmonitor.R
 import com.aueb.healthmonitor.enums.HealthRecordType
+import com.aueb.healthmonitor.fhirclient.FhirServices
 import com.aueb.healthmonitor.healthconnect.HealthConnectManager
 import com.aueb.healthmonitor.healthconnect.HealthData
 import com.aueb.healthmonitor.patient.PatientManager
+import com.aueb.healthmonitor.ui.getGenderByCode
 import com.aueb.healthmonitor.ui.vitalsscreen.menu.HealthRecordMenuItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -97,15 +101,52 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
         //TODO: maybe create a hash for the (day + type + patient + records) and create an id
         //TODO: check if id already exists. if true we know that this patient for this day has already upload the type and the exact records (so workflow ends).
         //TODO: Else -> Convert [HRConverted is ready and untested] and submit records to hapi fhir
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main){
+                isLoading = true
+            }
+            async {
+                FhirServices.createHeartRateObservations(healthData.value.heartRateMeasurements,patientManager.GetId() ?: "", context)}.await()
+            withContext(Dispatchers.Main){
+                isLoading = false
+            }
+        }
     }
     fun onSaveO2sp(data: List<OxygenSaturationRecord>){
-
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main){
+                isLoading = true
+            }
+            async {
+                FhirServices.createO2spObservations(healthData.value.spo2Measurements,"1", context)}.await()
+            withContext(Dispatchers.Main){
+                isLoading = false
+            }
+        }
     }
     fun onSaveBP(data: List<BloodPressureRecord>){
-
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main){
+                isLoading = true
+            }
+            async {
+                FhirServices.createBPObservations(healthData.value.bloodPressureMeasurements,patientManager.GetId() ?: "", context)}.await()
+            withContext(Dispatchers.Main){
+                isLoading = false
+            }
+        }
     }
     fun onSaveBG(data: List<BloodGlucoseRecord>){
-
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main){
+                isLoading = true
+            }
+            async {
+                FhirServices.createBGObservations(healthData.value.bloodSugarMeasurements,patientManager.GetId() ?: "", context)}.await()
+            withContext(Dispatchers.Main){
+                isLoading = false
+            }
+        }
     }
     private suspend fun tryWithPermissionsCheck(block: suspend () -> Unit) {
         permissionsGranted.value = healthConnectManager.hasAllPermissions(permissions)
