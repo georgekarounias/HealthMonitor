@@ -24,6 +24,7 @@
     <string name="patient_screen_form_header">Patient Info</string>
     <string name="patient_screen_form_name">Name</string>
     <string name="patient_screen_form_surname">Surname</string>
+    <string name="patient_screen_form_smart_watch_manufacturer">Smartwatch Manufacturer</string>
     <string name="patient_screen_form_smart_watch_model">Smartwatch Model</string>
     <string name="patient_screen_form_birthdate">Birthdate</string>
     <string name="patient_screen_create_btn">Save</string>

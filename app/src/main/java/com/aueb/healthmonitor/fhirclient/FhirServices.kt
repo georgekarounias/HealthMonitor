@@ -89,7 +89,10 @@ class FhirServices {
             device.manufacturer = manufacturer
             device.modelNumber = model
             val patient = existingPatient as Patient
-            val patientRef = Reference(patient.id)
+            val patientResource = existingPatient as Resource
+
+            device.contained = listOf(patientResource)
+            val patientRef = Reference("#" + patientResource.idElement.idPart)
             patientRef.display = patient.nameFirstRep.nameAsSingleString
             device.patient = patientRef
 

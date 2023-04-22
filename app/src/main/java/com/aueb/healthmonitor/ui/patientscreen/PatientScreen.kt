@@ -109,6 +109,16 @@ fun PatienScreen(navController: NavController, context: Context, patientManager:
                 readOnly = viewModel.readOnly,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            CustomTextField(
+                label = stringResource(id = R.string.patient_screen_form_smart_watch_manufacturer),
+                value = viewModel.smartwachManufacturer,
+                onValueChange = { viewModel.UpdateSmartwatchManufacturer(it) },
+                readOnly = viewModel.readOnly,
+                modifier = Modifier.fillMaxWidth(0.8f)
+            )
         }
 
         if(viewModel.isFormValidated){

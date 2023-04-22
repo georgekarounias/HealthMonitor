@@ -4,7 +4,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 
 class StaticVariables {
     companion object{
-        const val BASE_URL = "http://192.168.2.3:8080/fhir/"
+        const val BASE_URL = "http://192.168.2.4:8080/fhir/"
         const val AppSharedPreferences = "health_monitor_preferences"
         const val ASP_PatientId = "patientUuid"
         const val ASP_PatientName = "patientName"

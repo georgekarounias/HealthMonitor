@@ -33,6 +33,7 @@ class PatientViewModel(private val context: Context, private val patientManager:
     var birthdate: Date by  mutableStateOf(Date())
     var birthdateStr: String by  mutableStateOf("")
     var smartwachmodel: String by  mutableStateOf("")
+    var smartwachManufacturer: String by  mutableStateOf("")
 
     init{
         initPatient()
@@ -61,6 +62,11 @@ class PatientViewModel(private val context: Context, private val patientManager:
         isFormValidated = isFormValid()
     }
 
+    fun UpdateSmartwatchManufacturer(value: String){
+        smartwachManufacturer = value.trim()
+        isFormValidated = isFormValid()
+    }
+
     private fun setLoaderInfo(_show: Boolean, _title: String, _text: String){
         isLoading = _show
         loadingText = _text
@@ -74,6 +80,7 @@ class PatientViewModel(private val context: Context, private val patientManager:
             val patientId = patientManager.GetId()
             if(patientId!=null) {
                 val patient = FhirServices.getPatientByIdentifier(patientId, context)
+                val device = FhirServices.getConnectedDevices(patientId, context)
                 withContext(Dispatchers.Main) {
                     if (patient != null) {
                         readOnly = patientManager.checkIfPatientHasId(patient as Patient, patientId)
@@ -83,6 +90,8 @@ class PatientViewModel(private val context: Context, private val patientManager:
                             gender = patient.gender?.toCode() ?: ""
                             birthdate = patient.birthDate ?: Date()
                             birthdateStr = dateToIsoString(patient.birthDate)
+                            smartwachmodel = device.firstOrNull()?.modelNumber ?: ""
+                            smartwachManufacturer = device.firstOrNull()?.manufacturer ?: ""
                         }
                     }
                 }
@@ -98,7 +107,8 @@ class PatientViewModel(private val context: Context, private val patientManager:
                 surname.isNullOrEmpty()||
                 gender.isNullOrEmpty()||
                 birthdateStr.isNullOrEmpty() ||
-                smartwachmodel.isNullOrEmpty()){
+                smartwachmodel.isNullOrEmpty() ||
+                smartwachManufacturer.isNullOrEmpty()){
             return false
         }
         if(readOnly){
@@ -113,7 +123,15 @@ class PatientViewModel(private val context: Context, private val patientManager:
                 setLoaderInfo(true, "Loading_res", "Please wait..._res")
             }
             val fhirGender = getGenderByCode(gender)
-            FhirServices.createPatient(patientManager.GetId() ?: "", name, surname, fhirGender, birthdate, context, patientManager)
+            FhirServices.createPatient(patientManager.GetId() ?: "",
+                name,
+                surname,
+                fhirGender,
+                birthdate,
+                context,
+                patientManager
+            )
+            FhirServices.saveDeviceInfo(smartwachManufacturer, smartwachmodel, patientManager.GetId() ?: "", context)
             withContext(Dispatchers.Main){
                 setLoaderInfo(false, "", "")
             }
