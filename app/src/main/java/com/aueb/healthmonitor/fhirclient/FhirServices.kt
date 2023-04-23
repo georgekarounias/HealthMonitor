@@ -36,7 +36,7 @@ class FhirServices {
             }
         }
 
-        fun createPatient(id: String, name: String, surname: String, sex: Enumerations.AdministrativeGender, birthDate: Date, ctx: Context, patientManager: PatientManager): Boolean{
+        fun createPatient(id: String, name: String, surname: String, sex: Enumerations.AdministrativeGender, birthDate: Date, ctx: Context, patientManager: PatientManager, manufacturer: String, model: String): Boolean{
             val existingPatient = getPatientByIdentifier(id, null)
             if(existingPatient != null){
                 toastMessage(ctx, ctx.getString(R.string.fhir_patient_exist))
@@ -50,8 +50,11 @@ class FhirServices {
             patient.birthDate = birthDate
             val client = RestClient.getClient()
             try {
-                client!!.create().resource(patient).execute()
+                val outcome = client!!.create().resource(patient).execute()
+                val id = outcome.id
+                val createdPatient = client.read().resource(Patient::class.java).withId(id).execute()
                 toastMessage(ctx, ctx.getString(R.string.fhir_patient_created))
+                saveDeviceInfo(manufacturer, model, patientManager.GetId() ?: "", ctx, createdPatient)
                 return true
             }catch (e: Exception){
                 toastMessage(ctx, ctx.getString(R.string.message_fhir_error_on_patient_create))
@@ -109,9 +112,11 @@ class FhirServices {
         }
 
         fun createO2spObservations(records: List<OxygenSaturationRecord>, patientId: String, ctx: Context?): Bundle? {
-            val client = RestClient.getClient()
-            val bundle = O2spRecordConverter.createO2spBundle(records, patientId)
             try {
+                val existingPatient = getPatientByIdentifier(patientId, null) as Resource
+                val patientIntId = existingPatient.idElement.idPart
+                val client = RestClient.getClient()
+                val bundle = O2spRecordConverter.createO2spBundle(records, patientIntId)
                 return client?.transaction()?.withBundle(bundle)?.execute()
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
@@ -119,18 +124,13 @@ class FhirServices {
             }
         }
 
-        fun saveDeviceInfo(manufacturer: String, model: String, patientId: String, ctx: Context?): MethodOutcome?{
-            val existingPatient = getPatientByIdentifier(patientId, null)
-            if(existingPatient == null){
-                toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_not_found))
-                return null
-            }
+        private fun saveDeviceInfo(manufacturer: String, model: String, patientId: String, ctx: Context?, patient: Patient): MethodOutcome?{
+
             val device = Device()
             device.type.text = "Smart Watch"
             device.manufacturer = manufacturer
             device.modelNumber = model
-            val patient = existingPatient as Patient
-            val patientResource = existingPatient as Resource
+            val patientResource = patient as Resource
 
             device.contained = listOf(patientResource)
             val patientRef = Reference("#" + patientResource.idElement.idPart)

@@ -20,9 +20,11 @@ import com.aueb.healthmonitor.utils.toastMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.hl7.fhir.r4.model.Patient
 import java.util.Date
+import kotlin.coroutines.suspendCoroutine
 
 
 class PatientViewModel(private val context: Context, private val patientManager: PatientManager, private val navController: NavController): ViewModel(){
@@ -129,23 +131,17 @@ class PatientViewModel(private val context: Context, private val patientManager:
                 setLoaderInfo(true, context.resources.getString(R.string.loader_resource_title), context.resources.getString(R.string.loader_resource_text))
             }
             val fhirGender = getGenderByCode(gender)
-            async {
-                isFhirRequestPatientCreated = FhirServices.createPatient(patientManager.GetId() ?: "",
+
+            isFhirRequestPatientCreated = FhirServices.createPatient(patientManager.GetId() ?: "",
                 name,
                 surname,
                 fhirGender,
                 birthdate,
                 context,
-                patientManager
-            )}.await()
-            async {
-                FhirServices.saveDeviceInfo(
-                    smartwachManufacturer,
-                    smartwachmodel,
-                    patientManager.GetId() ?: "",
-                    context
-                )
-            }.await()
+                patientManager,
+                smartwachManufacturer,
+                smartwachmodel
+            )
             withContext(Dispatchers.Main){
                 setLoaderInfo(false, "", "")
                 if(isFhirRequestPatientCreated){
