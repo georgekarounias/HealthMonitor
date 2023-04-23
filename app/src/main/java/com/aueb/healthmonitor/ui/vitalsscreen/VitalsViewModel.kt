@@ -118,7 +118,7 @@ class VitalsViewModel(private val context: Context, private val patientManager: 
                 isLoading = true
             }
             async {
-                FhirServices.createO2spObservations(healthData.value.spo2Measurements,"1", context)}.await()
+                FhirServices.createO2spObservations(healthData.value.spo2Measurements,patientManager.GetId() ?: "", context)}.await()
             withContext(Dispatchers.Main){
                 isLoading = false
             }

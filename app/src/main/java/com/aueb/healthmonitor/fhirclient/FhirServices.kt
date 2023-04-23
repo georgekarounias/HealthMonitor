@@ -79,9 +79,11 @@ class FhirServices {
         }
 
         fun createHeartRateObservations(records: List<HeartRateRecord>, patientId: String, ctx: Context?): Bundle? {
-            val client = RestClient.getClient()
-            val bundle = HRRecordConverter.createHRBundle(records, patientId)
             try {
+                val existingPatient = getPatientByIdentifier(patientId, null) as Resource
+                val patientIntId = existingPatient.idElement.idPart
+                val client = RestClient.getClient()
+                val bundle = HRRecordConverter.createHRBundle(records, patientIntId)
                 return client?.transaction()?.withBundle(bundle)?.execute()
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
@@ -90,9 +92,11 @@ class FhirServices {
         }
 
         fun createBPObservations(records: List<BloodPressureRecord>, patientId: String, ctx: Context?): Bundle? {
-            val client = RestClient.getClient()
-            val bundle = BPRecordConverter.createBPBundle(records, patientId)
             try {
+                val existingPatient = getPatientByIdentifier(patientId, null) as Resource
+                val patientIntId = existingPatient.idElement.idPart
+                val client = RestClient.getClient()
+                val bundle = BPRecordConverter.createBPBundle(records, patientIntId)
                 return client?.transaction()?.withBundle(bundle)?.execute()
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
@@ -101,9 +105,11 @@ class FhirServices {
         }
 
         fun createBGObservations(records: List<BloodGlucoseRecord>, patientId: String, ctx: Context?): Bundle? {
-            val client = RestClient.getClient()
-            val bundle = BGRecordConverter.createBGBundle(records, patientId)
             try {
+                val existingPatient = getPatientByIdentifier(patientId, null) as Resource
+                val patientIntId = existingPatient.idElement.idPart
+                val client = RestClient.getClient()
+                val bundle = BGRecordConverter.createBGBundle(records, patientIntId)
                 return client?.transaction()?.withBundle(bundle)?.execute()
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_transaction_failed))
