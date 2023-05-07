@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HealthMonitor</string>
+    <string name="message_fhir_server_running">Ο διακομιστής Fhir είναι ενεργός.</string>
+    <string name="message_fhir_server_down">Ο διακομιστής Fhir δεν αποκρίνεται.</string>
+    <string name="message_fhir_resource_not_found">Ο πόρος Fhir δεν βρέθηκε.</string>
+    <string name="message_fhir_error_on_patient_create">Δεν ήταν δυνατή η δημιουργία ασθενούς.</string>
+    <string name="message_fhir_transaction_failed">Η ενέργεια Fhir απέτυχε.</string>
+    <string name="fhir_patient_exist">Fhir Patient already exists.</string>
+    <string name="fhir_patient_created">Ο ασθενής Fhir υπάρχει ήδη.</string>
+    <string name="message_fhir_patient_not_found">Δημιουργήστε πρώτα έναν ασθενή Fhir.</string>
+    <string name="message_fhir_patient_device_not_found">Δεν υπάρχουν συνδεδεμένες συσκευές.</string>
+
+    <string name="menu_item_vitals">Ζωτικά σημάδια</string>
+    <string name="menu_item_patient">Ασθενής</string>
+    <string name="menu_item_home">Αρχική</string>
+    <string name="menu_item_info">Πληροφορίες</string>
+    <string name="menu_item_settings">Ρυθμίσεις</string>
+
+    <string name="home_screen">Αρχική</string>
+    <string name="patient_screen">Ασθενής</string>
+    <string name="vitals_screen">Ζωτικά σημάδια</string>
+    <string name="info_screen">Πληροφορίες</string>
+
+    <string name="patient_screen_form_header">Πληροφορίες Ασθενή</string>
+    <string name="patient_screen_form_name">Όνομα</string>
+    <string name="patient_screen_form_surname">Επώνυμο</string>
+    <string name="patient_screen_form_smart_watch_manufacturer">Κατασκευαστής Smartwatch</string>
+    <string name="patient_screen_form_smart_watch_model">Μοντέλο Smartwatch</string>
+    <string name="patient_screen_form_birthdate">Ημερομηνία γέννησης</string>
+    <string name="patient_screen_form_gender">Γένος</string>
+    <string name="patient_screen_create_btn">Αποθήκευση</string>
+
+    <string name="settings_screen_header">Ρυθμίσεις</string>
+    <string name="settings_screen_hapi_fhir_url">Hapi Fhir Server Url</string>
+
+    <string name="date_picker_open_modal_btn_title">Επιλέξτε ημερομηνία γέννησης</string>
+    <string name="date_picker_selected_date_prefix">Επιλέξτε ημερομηνία γέννησης</string>
+    <string name="welcome_message">Καλως ήλθατε σto Health Connect!</string>
+    <string name="health_connect_logo">Health Connect logo</string>
+    <string name="installed_welcome_message">
+        Το Health Connect είναι εγκατεστημένο σε αυτήν τη συσκευή. Χρησιμοποιήστε το μενού για να εξερευνήσετε την εφαρμογή.
+    </string>
+    <!-- Not installed on device -->
+    <string name="not_installed_tag">not_installed_tag</string>
+    <string name="market_url">market://details</string>
+    <string name="health_connect_package">com.google.android.apps.healthdata</string>
+    <string name="onboarding_url">healthconnect://onboarding</string>
+    <string name="not_installed_description">
+        Το Health Connect είναι εγκατεστημένο σε αυτήν τη συσκευή. Βεβαιωθείτε ότι το Health Connect είναι ενημερωμένο.
+    </string>
+    <string name="not_installed_link_text">
+        Το πακέτο Health Connect μπορεί να εγκατασταθεί/ενημερωθεί μέσω του Google Play.
+    </string>
+
+    <!-- Not supported on device -->
+    <string name="not_supported_tag">not_supported_tag</string>
+    <string name="not_supported_url">https://developer.android.com/health-connect</string>
+    <string name="not_supported_description">
+        Το Health Connect υποστηρίζεται μόνο σε συσκευές Android με επίπεδο API %1$d ή μεγαλύτερο.
+    </string>
+    <string name="not_supported_link_text">
+        Επισκεφτείτε τους οδηγούς Health Connect για να μάθετε περισσότερα σχετικά με τη συμβατότητα και τη χρήση της συσκευής
+        Health Connect.
+    </string>
+
+
+    <string name="datePicker_select_date_default">Επιλέξτε ημερομηνία</string>
+    <string name="vitals_screen_save_records">Αποθήκευση εγγραφών</string>
+    <string name="vitals_screen_get_permissions">Λάβετε Άδειες</string>
+
+    <string name="loader_resource_title">Φόρτωση Ενέργειας</string>
+    <string name="loader_resource_text">Αυτή η ενέργεια μπορεί να διαρκέσει λίγο...</string>
+</resources>
