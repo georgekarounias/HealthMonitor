@@ -15,6 +15,9 @@ import com.aueb.healthmonitor.recordConverters.BPRecordConverter
 import com.aueb.healthmonitor.recordConverters.HRRecordConverter
 import com.aueb.healthmonitor.recordConverters.O2spRecordConverter
 import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.PatientIdSystemCode
+import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.TagName
+import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.TagSystem
+import com.aueb.healthmonitor.staticVariables.StaticVariables.Companion.TagValueDisplay
 import com.aueb.healthmonitor.utils.hashString
 import com.aueb.healthmonitor.utils.toastMessage
 import org.hl7.fhir.instance.model.api.IBaseBundle
@@ -48,6 +51,11 @@ class FhirServices {
             patient.addName().setFamily(hashString(name)).addGiven(hashString(surname))
             patient.gender = sex
             patient.birthDate = birthDate
+            val tag = Coding()
+            tag.system = TagSystem
+            tag.code = TagName
+            tag.display = TagValueDisplay
+            patient.meta = Meta().addTag(tag)
             val client = RestClient.getClient()
             try {
                 val outcome = client!!.create().resource(patient).execute()
@@ -139,10 +147,14 @@ class FhirServices {
             val patientResource = patient as Resource
 
             device.contained = listOf(patientResource)
-            val patientRef = Reference("#" + patientResource.idElement.idPart)
+            val patientRef = Reference("Patient/" + patientResource.idElement.idPart)
             patientRef.display = patient.nameFirstRep.nameAsSingleString
             device.patient = patientRef
-
+            val tag = Coding()
+            tag.system = TagSystem
+            tag.code = TagName
+            tag.display = TagValueDisplay
+            device.meta = Meta().addTag(tag)
             val client = RestClient.getClient()
             try {
                 val deviceOutcome: MethodOutcome = client!!.create()
@@ -175,7 +187,7 @@ class FhirServices {
                 val devices = deviceResults.entry.asSequence().map{x->x.resource as Device}
                 val patientResource = existingPatient as Resource
                 val patientIntId = patientResource.idElement.idPart
-                val patientDevices = devices.filter { it.patient.reference == "#$patientIntId" }.toList()
+                val patientDevices = devices.filter { it.patient.reference.contains(patientIntId) }.toList()
                 return patientDevices
             }catch (e: Exception){
                 toastMessage(ctx, ctx?.getString(R.string.message_fhir_patient_device_not_found))
